@@ -1,0 +1,5 @@
+{
+  "ext": ".arc",
+  "flag": "--tokenize",
+  "mode": "sidecar"
+}

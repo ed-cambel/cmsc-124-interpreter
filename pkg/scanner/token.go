@@ -61,3 +61,37 @@ type Token struct {
 	Literal any
 	Line    int
 }
+
+// method to print the name of TokenType instead of its number
+func (t TokenType) String() string {
+	switch t {
+	case LEFT_PAREN:
+		return "LEFT_PAREN"
+	case RIGHT_PAREN:
+		return "LEFT_PAREN"
+	case LEFT_BRACE:
+		return "LEFT_BRACE"
+	case RIGHT_BRACE:
+		return "RIGHT_BRACE"
+	case COMMA:
+		return "COMMA"
+	case DOT:
+		return "DOT"
+	case SEMICOLON:
+		return "SEMICOLON"
+	case PLUS:
+		return "PLUS"
+	case MINUS:
+		return "MINUS"
+	case STAR:
+		return "STAR"
+	case SLASH:
+		return "SLASH"
+	case PERCENT:
+		return "PERCENT"
+	case EOF:
+		return "EOF"
+	default:
+		return "UNKNOWN"
+	}
+}
