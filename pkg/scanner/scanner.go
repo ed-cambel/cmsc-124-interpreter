@@ -19,7 +19,93 @@ func NewScanner(source string) *Scanner {
 func (s *Scanner) ScanTokens() []Token {
 	tokens := []Token{}
 
-	//TODO: implement scanning process
+	//TODO: Continue implementing the scanning process for other token types
+	for s.current < len(s.source) {
+		s.start = s.current
+		char := s.advance()
+
+		switch char {
+		case '(':
+			tokens = append(tokens, Token{
+				Type:   LEFT_PAREN,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case ')':
+			tokens = append(tokens, Token{
+				Type:   RIGHT_PAREN,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '{':
+			tokens = append(tokens, Token{
+				Type:   LEFT_BRACE,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '}':
+			tokens = append(tokens, Token{
+				Type:   RIGHT_BRACE,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case ',':
+			tokens = append(tokens, Token{
+				Type:   COMMA,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '.':
+			tokens = append(tokens, Token{
+				Type:   DOT,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case ';':
+			tokens = append(tokens, Token{
+				Type:   SEMICOLON,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '+':
+			tokens = append(tokens, Token{
+				Type:   PLUS,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '-':
+			tokens = append(tokens, Token{
+				Type:   MINUS,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '*':
+			tokens = append(tokens, Token{
+				Type:   STAR,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '/':
+			tokens = append(tokens, Token{
+				Type:   SLASH,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '%':
+			tokens = append(tokens, Token{
+				Type:   PERCENT,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		}
+	}
+
+	tokens = append(tokens, Token{
+		Type:    EOF,
+		Lexeme:  "",
+		Literal: nil,
+		Line:    s.line,
+	})
 
 	return tokens
 }
