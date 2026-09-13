@@ -199,15 +199,19 @@ func (s *Scanner) ScanTokens() []Token {
 			})
 
 		case '"': // indicates a string
+			tokenLine := s.line
 			literal := s.scanString()
 
 			tokens = append(tokens, Token{
 				Type:    STRING,
 				Lexeme:  s.source[s.start:s.current],
 				Literal: literal,
-				Line:    s.line,
+				Line:    tokenLine,
 			})
+		case '\n':
+			s.line++
 		}
+
 	}
 
 	tokens = append(tokens, Token{
