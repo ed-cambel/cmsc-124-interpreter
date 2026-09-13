@@ -71,7 +71,7 @@ func (s *Scanner) ScanTokens() []Token {
 			})
 		case '.':
 			if s.current < len(s.source) && s.peek() >= '0' && s.peek() <= '9' {
-				lexeme := s.number()
+				lexeme := s.scanNumber()
 
 				literal, _ := strconv.ParseFloat(lexeme, 64)
 
@@ -181,7 +181,7 @@ func (s *Scanner) ScanTokens() []Token {
 				})
 			}
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-			lexeme := s.number()
+			lexeme := s.scanNumber()
 
 			var literal any
 
@@ -237,7 +237,7 @@ func (s *Scanner) match(expected byte) bool {
 	return true
 }
 
-func (s *Scanner) number() string {
+func (s *Scanner) scanNumber() string {
 	for s.peek() >= '0' && s.peek() <= '9' {
 		s.advance()
 	}
