@@ -68,7 +68,7 @@ func (t TokenType) String() string {
 	case LEFT_PAREN:
 		return "LEFT_PAREN"
 	case RIGHT_PAREN:
-		return "LEFT_PAREN"
+		return "RIGHT_PAREN"
 	case LEFT_BRACE:
 		return "LEFT_BRACE"
 	case RIGHT_BRACE:
@@ -103,6 +103,10 @@ func (t TokenType) String() string {
 		return "LESS_EQUAL"
 	case GREATER_EQUAL:
 		return "GREATER_EQUAL"
+	case AND:
+		return "AND"
+	case OR:
+		return "OR"
 	case NOT:
 		return "NOT"
 	case EOF:

@@ -146,6 +146,22 @@ func (s *Scanner) ScanTokens() []Token {
 				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
+		case '&':
+			if s.match('&') {
+				tokens = append(tokens, Token{
+					Type:   AND,
+					Lexeme: s.source[s.start:s.current],
+					Line:   s.line,
+				})
+			}
+		case '|':
+			if s.match('|') {
+				tokens = append(tokens, Token{
+					Type:   OR,
+					Lexeme: s.source[s.start:s.current],
+					Line:   s.line,
+				})
+			}
 		}
 	}
 
