@@ -29,7 +29,7 @@ This project involves designing and implementing an interpreter for a programmin
 | `./run` | [Starts the REPL.] |
 
 
-Exit codes: 0 [when], 65 [when], 70 [when].
+Exit codes: 0 when program runs successfully, 65 when semantic errors encountered, 70 [when].
 
 ## File extension
 
@@ -50,11 +50,20 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
-| + | [arithmetic] | [binary] | TBD | TBD |
-| - | [arithmetic] | [binary] | TBD | TBD |
-| * | [arithmetic] | [binary] | TBD | TBD |
-| / | [arithmetic] | [binary] | TBD | TBD |
-| % | [arithmetic] | [binary] | TBD | TBD |
+| `+` | [arithmetic] | [binary] | TBD | TBD |
+| `-` | [arithmetic] | [binary] | TBD | TBD |
+| `*` | [arithmetic] | [binary] | TBD | TBD |
+| `/` | [arithmetic] | [binary] | TBD | TBD |
+| `%` | [arithmetic] | [binary] | TBD | TBD |
+| `!` | [logical] | [unary] | TBD | TBD |
+| `&&` | [logical] | [binary] | TBD | TBD |
+| `\|\|` | [logical] | [binary] | TBD | TBD |
+| `=` | [assignment] | [binary] | TBD | TBD |
+| `>` | [comparison] | [binary] | TBD | TBD |
+| `<` | [comparison] | [binary] | TBD | TBD |
+| `==` | [comparison] | [binary] | TBD | TBD |
+| `>=` | [comparison] | [binary] | TBD | TBD |
+| `<=`| [comparison] | [binary] | TBD | TBD |
 | [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
 
 
@@ -94,11 +103,12 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 ## Token output format
 
 ```
-[one line of real --tokenize output]
+Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ```
-
-[What each field means. Frozen as of Lab 1; changes are recorded in the
-changelog.]
+- type: the token's 'TokenType' as defined constants and printed in string form by `token.go`.
+- lexeme: the source text the token was scanned from, including surrounding text (e.g. a string's lexeme includes quotation marks: `"hello"`, a number's lexeme is just its digits: `123`).
+- literal: the token's represented value; strings and numbers are considered literals, operators and punctuation have no value and are considered \<nil>\.
+- line: the source line the token started on. 
 
 ## Grammar
 
@@ -171,7 +181,7 @@ true.]
 Message format:
 
 ```
-[one real static error]
+[Line 2] Error: Unexpected character '#'
 [one real runtime error]
 ```
 
@@ -235,4 +245,5 @@ approval of your own work.]
 
 | Activity | What changed in the language |
 |---|---|
-| Lab 1 | [entry] |
+| Lab 1 | Established token output format (`TYPE LEXEME LITERAL LINE`) |
+| Lab 1 | Changed token output format (`Token(type=TYPE, lexeme=LEXEME, literal=LITERAL, line = LINE)`) |
