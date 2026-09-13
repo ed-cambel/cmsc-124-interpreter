@@ -111,6 +111,8 @@ func (t TokenType) String() string {
 		return "NOT"
 	case NUMBER:
 		return "NUMBER"
+	case STRING:
+		return "STRING"
 	case EOF:
 		return "EOF"
 	default:

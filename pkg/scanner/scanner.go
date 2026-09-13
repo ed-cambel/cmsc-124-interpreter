@@ -197,6 +197,16 @@ func (s *Scanner) ScanTokens() []Token {
 				Literal: literal,
 				Line:    s.line,
 			})
+
+		case '"': // indicates a string
+			literal := s.scanString()
+
+			tokens = append(tokens, Token{
+				Type:    STRING,
+				Lexeme:  s.source[s.start:s.current],
+				Literal: literal,
+				Line:    s.line,
+			})
 		}
 	}
 
@@ -251,4 +261,19 @@ func (s *Scanner) scanNumber() string {
 	}
 
 	return s.source[s.start:s.current]
+}
+
+func (s *Scanner) scanString() string {
+	for s.peek() != '"' && s.current < len(s.source) {
+		if s.peek() == '\n' {
+			s.line++
+		}
+		s.advance()
+	}
+
+	if s.current < len(s.source) {
+		s.advance() // closing "
+	}
+
+	return s.source[s.start+1 : s.current-1] // to not include double quotation marks
 }
