@@ -265,6 +265,19 @@ func (s *Scanner) scanNumber() string {
 
 func (s *Scanner) scanString() string {
 	for s.peek() != '"' && s.current < len(s.source) {
+		if s.peek() == '\\' { // basically checks for backlash
+			s.advance() // consumes the backlash
+
+			switch s.peek() {
+			case 'n', 't', '"', '\\':
+				s.advance()
+			default:
+				// invalid escape sequence
+			}
+
+			continue
+		}
+
 		if s.peek() == '\n' {
 			s.line++
 		}
