@@ -5,4 +5,8 @@ Token(type=STRING, lexeme=" ", literal= , line=1)
 Token(type=STRING, lexeme=";", literal=;, line=1)
 Token(type=STRING, lexeme="WORLD", literal=WORLD, line=1)
 Token(type=STRING, lexeme="HeLL0-worLd", literal=HeLL0-worLd, line=1)
-Token(type=EOF, lexeme=, literal=null, line=1)
+Token(type=STRING, lexeme="New
+line", literal=New
+line, line=1)
+Token(type=STRING, lexeme="on 3rd line", literal=on 3rd line, line=3)
+Token(type=EOF, lexeme=, literal=null, line=3)
