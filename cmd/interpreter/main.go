@@ -31,6 +31,10 @@ func main() {
 		s := scanner.NewScanner(string(source))
 		tokens := s.ScanTokens()
 
+		if s.IsError {
+			os.Exit(65)
+		}
+
 		for _, token := range tokens {
 			fmt.Printf("Token(type=%v, lexeme=%s, literal=%v, line=%d)\n",
 				token.Type,
@@ -42,6 +46,7 @@ func main() {
 
 		return
 	}
+
 
 	// Lab 0 behavior	
 	path := os.Args[1]
