@@ -91,6 +91,14 @@ func (t TokenType) String() string {
 		return "PERCENT"
 	case EOF:
 		return "EOF"
+	case EQUAL:
+		return "EQUAL"
+	case LESS:
+		return "LESS"
+	case GREATER:
+		return "GREATER"
+	case NOT:
+		return "NOT"
 	default:
 		return "UNKNOWN"
 	}
