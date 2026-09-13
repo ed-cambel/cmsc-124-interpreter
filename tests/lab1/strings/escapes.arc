@@ -1,0 +1,6 @@
+"hello\nworld"
+"say \"hello\""
+"path\\file"
+"tab\there"
+"quote: \"hello\""
+"backslash: \\"
