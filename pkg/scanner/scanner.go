@@ -1,6 +1,8 @@
 package scanner
 
 import (
+	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -10,6 +12,7 @@ type Scanner struct {
 	start   int
 	current int
 	line    int
+	IsError	bool
 }
 
 // Constructor
@@ -197,19 +200,25 @@ func (s *Scanner) ScanTokens() []Token {
 				Literal: literal,
 				Line:    s.line,
 			})
-
 		case '"': // indicates a string
 			tokenLine := s.line
-			literal := s.scanString()
-
+			literal, isValidString := s.scanString()
+			
+			if !isValidString {
+				s.printError("Unterminated string.")
+			} else {
 			tokens = append(tokens, Token{
 				Type:    STRING,
 				Lexeme:  s.source[s.start:s.current],
 				Literal: literal,
 				Line:    tokenLine,
-			})
+			})}
+		case ' ', '\t', '\r':
+			// ignore whitespaces, tabs, and carriage return
 		case '\n':
 			s.line++
+		default:
+			s.printError(fmt.Sprintf("Unexpected character '%c'", char))
 		}
 
 	}
@@ -267,7 +276,7 @@ func (s *Scanner) scanNumber() string {
 	return s.source[s.start:s.current]
 }
 
-func (s *Scanner) scanString() string {
+func (s *Scanner) scanString() (string, bool) {
 	for s.peek() != '"' && s.current < len(s.source) {
 		if s.peek() == '\\' { // basically checks for backlash
 			s.advance() // consumes the backlash
@@ -288,9 +297,14 @@ func (s *Scanner) scanString() string {
 		s.advance()
 	}
 
-	if s.current < len(s.source) {
-		s.advance() // closing "
+	if s.current >= len(s.source) {
+		return "", false
 	}
+	s.advance() // consume closing 
+	return s.source[s.start+1 : s.current-1], true // to not include double quotation marks
+}
 
-	return s.source[s.start+1 : s.current-1] // to not include double quotation marks
+func (s *Scanner) printError(errMessage string) {
+	fmt.Fprintf(os.Stderr, "[Line %d] Error: %s\n", s.line, errMessage)
+	s.IsError = true
 }
