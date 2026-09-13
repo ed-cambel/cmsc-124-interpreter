@@ -1,5 +1,10 @@
 package scanner
 
+import (
+	"strconv"
+	"strings"
+)
+
 type Scanner struct {
 	source  string
 	start   int
@@ -65,11 +70,24 @@ func (s *Scanner) ScanTokens() []Token {
 				Line:   s.line,
 			})
 		case '.':
-			tokens = append(tokens, Token{
-				Type:   DOT,
-				Lexeme: string(char),
-				Line:   s.line,
-			})
+			if s.current < len(s.source) && s.peek() >= '0' && s.peek() <= '9' {
+				lexeme := s.number()
+
+				literal, _ := strconv.ParseFloat(lexeme, 64)
+
+				tokens = append(tokens, Token{
+					Type:    NUMBER,
+					Lexeme:  lexeme,
+					Literal: literal,
+					Line:    s.line,
+				})
+			} else {
+				tokens = append(tokens, Token{
+					Type:   DOT,
+					Lexeme: string(char),
+					Line:   s.line,
+				})
+			}
 		case ';':
 			tokens = append(tokens, Token{
 				Type:   SEMICOLON,
@@ -162,6 +180,23 @@ func (s *Scanner) ScanTokens() []Token {
 					Line:   s.line,
 				})
 			}
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			lexeme := s.number()
+
+			var literal any
+
+			if strings.Contains(lexeme, ".") {
+				literal, _ = strconv.ParseFloat(lexeme, 64)
+			} else {
+				literal, _ = strconv.Atoi(lexeme)
+			}
+
+			tokens = append(tokens, Token{
+				Type:    NUMBER,
+				Lexeme:  lexeme,
+				Literal: literal,
+				Line:    s.line,
+			})
 		}
 	}
 
@@ -175,6 +210,7 @@ func (s *Scanner) ScanTokens() []Token {
 	return tokens
 }
 
+// Helper methods
 func (s *Scanner) advance() byte {
 	char := s.source[s.current]
 	s.current++
@@ -199,4 +235,20 @@ func (s *Scanner) match(expected byte) bool {
 
 	s.current++
 	return true
+}
+
+func (s *Scanner) number() string {
+	for s.peek() >= '0' && s.peek() <= '9' {
+		s.advance()
+	}
+
+	if s.peek() == '.' && s.current+1 < len(s.source) && s.source[s.current+1] >= '0' && s.source[s.current+1] <= '9' {
+		s.advance()
+
+		for s.peek() >= '0' && s.peek() <= '9' {
+			s.advance()
+		}
+	}
+
+	return s.source[s.start:s.current]
 }

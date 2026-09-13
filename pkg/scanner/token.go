@@ -109,6 +109,8 @@ func (t TokenType) String() string {
 		return "OR"
 	case NOT:
 		return "NOT"
+	case NUMBER:
+		return "NUMBER"
 	case EOF:
 		return "EOF"
 	default:
