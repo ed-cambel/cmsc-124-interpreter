@@ -1,5 +1,5 @@
 Token(type=LEFT_PAREN, lexeme=(, literal=null, line=1)
-Token(type=LEFT_PAREN, lexeme=), literal=null, line=1)
+Token(type=RIGHT_PAREN, lexeme=), literal=null, line=1)
 Token(type=LEFT_BRACE, lexeme={, literal=null, line=1)
 Token(type=RIGHT_BRACE, lexeme=}, literal=null, line=1)
 Token(type=COMMA, lexeme=,, literal=null, line=1)
