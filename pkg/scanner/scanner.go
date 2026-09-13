@@ -107,27 +107,43 @@ func (s *Scanner) ScanTokens() []Token {
 				Line:   s.line,
 			})
 		case '=':
+			tempType := EQUAL
+			if s.match('=') {
+				tempType = EQUAL_EQUAL
+			}
 			tokens = append(tokens, Token{
-				Type:   EQUAL,
-				Lexeme: string(char),
+				Type:   tempType,
+				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
 		case '<':
+			tempType := LESS
+			if s.match('=') {
+				tempType = LESS_EQUAL
+			}
 			tokens = append(tokens, Token{
-				Type:   LESS,
-				Lexeme: string(char),
+				Type:   tempType,
+				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
 		case '>':
+			tempType := GREATER
+			if s.match('=') {
+				tempType = GREATER_EQUAL
+			}
 			tokens = append(tokens, Token{
-				Type:   GREATER,
-				Lexeme: string(char),
+				Type:   tempType,
+				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
 		case '!':
+			tempType := NOT
+			if s.match('=') {
+				tempType = NOT_EQUAL
+			}
 			tokens = append(tokens, Token{
-				Type:   NOT,
-				Lexeme: string(char),
+				Type:   tempType,
+				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
 		}
