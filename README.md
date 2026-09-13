@@ -1,4 +1,4 @@
-# [Language name]
+# Arkana
 
 ## Creators
 
@@ -13,7 +13,7 @@ This project involves designing and implementing an interpreter for a programmin
 ## Host language and build
 
 - Host language: Go 1.27.0
-- Version metadata: [file that pins it, e.g. rust-toolchain.toml, go.mod]
+- Version metadata: `go.mod`
 - Build: `./build.sh`
 - [Anything a fresh clone needs to know.]
 
@@ -33,7 +33,7 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 ## File extension
 
-`[.ext]` [Must match the `ext` field in every tests/lab*/manifest.json.]
+`.arc`
 
 ## Lexical structure
 
@@ -50,6 +50,11 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
+| + | [arithmetic] | [binary] | TBD | TBD |
+| - | [arithmetic] | [binary] | TBD | TBD |
+| * | [arithmetic] | [binary] | TBD | TBD |
+| / | [arithmetic] | [binary] | TBD | TBD |
+| % | [arithmetic] | [binary] | TBD | TBD |
 | [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
 
 
@@ -58,8 +63,8 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Kind | Syntax | Produces |
 |---|---|---|
-| [number] | [e.g. 42, 3.14] | [what runtime value] |
-| [string] | [e.g. "hello", escapes supported] | [what runtime value] |
+| Number | `67`, `3.14`, `.5` | Integer or floating-point value |
+| String | `hello\n\tworld`, `quote: \"arkana\"` `yes\\no` | String value |
 | [boolean] | [true, false] | [what runtime value] |
 | [nil] | [spelling] | [what runtime value] |
 
