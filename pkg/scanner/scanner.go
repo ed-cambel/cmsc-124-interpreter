@@ -15,6 +15,15 @@ func NewScanner(source string) *Scanner {
 	}
 }
 
+// Helper for formatting literal values for printing
+func StringLiteral(literal any) any {
+	if literal == nil {
+		return "null"
+	}
+
+	return literal
+}
+
 // Main scanning function
 func (s *Scanner) ScanTokens() []Token {
 	tokens := []Token{}
@@ -94,6 +103,30 @@ func (s *Scanner) ScanTokens() []Token {
 		case '%':
 			tokens = append(tokens, Token{
 				Type:   PERCENT,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '=':
+			tokens = append(tokens, Token{
+				Type:   EQUAL,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '<':
+			tokens = append(tokens, Token{
+				Type:   LESS,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '>':
+			tokens = append(tokens, Token{
+				Type:   GREATER,
+				Lexeme: string(char),
+				Line:   s.line,
+			})
+		case '!':
+			tokens = append(tokens, Token{
+				Type:   NOT,
 				Lexeme: string(char),
 				Line:   s.line,
 			})

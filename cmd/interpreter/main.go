@@ -32,10 +32,10 @@ func main() {
 		tokens := s.ScanTokens()
 
 		for _, token := range tokens {
-			fmt.Printf("%v %s %v %d\n",
+			fmt.Printf("Token(type=%v, lexeme=%s, literal=%v, line=%d)\n",
 				token.Type,
 				token.Lexeme,
-				token.Literal,
+				scanner.StringLiteral(token.Literal),
 				token.Line,
 			)
 		}
@@ -43,7 +43,7 @@ func main() {
 		return
 	}
 
-	// Lab 0 behavior
+	// Lab 0 behavior	
 	path := os.Args[1]
 	source, err := os.ReadFile(path)
 	if err != nil {
