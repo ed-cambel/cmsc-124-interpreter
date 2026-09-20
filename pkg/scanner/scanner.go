@@ -60,6 +60,11 @@ var keywords = map[string]TokenType{
 	"cast":   CAST,
 	"yield":  YIELD,
 
+	// loop and jump statements
+	"ritual": RITUAL,
+	"skip":   SKIP,
+	"dispel": DISPEL,
+
 	// add other keywords here
 }
 

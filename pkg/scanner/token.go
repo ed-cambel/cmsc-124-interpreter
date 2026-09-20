@@ -65,6 +65,11 @@ const (
 	CAST
 	YIELD
 
+	// Loop and jump statements
+	RITUAL
+	SKIP
+	DISPEL
+
 	// TODO: More Witchcraft-themed keywords
 	BREW
 
@@ -165,6 +170,12 @@ func (t TokenType) String() string {
 		return "CAST"
 	case YIELD:
 		return "YIELD"
+	case RITUAL:
+		return "RITUAL"
+	case SKIP:
+		return "SKIP"
+	case DISPEL:
+		return "DISPEL"
 	case EOF:
 		return "EOF"
 	default:
