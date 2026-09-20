@@ -87,8 +87,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 ### Comments
 
-- Line comments: [token]
-- Block comments: [tokens, or "not supported"]
+- Line / Block comments: enclosed by opening tag (`/>`) and closing tag (`</`)
 - Nesting: [supported or not]
 - [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
   token above.]
