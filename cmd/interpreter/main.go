@@ -13,6 +13,17 @@ func fail(format string, arguments ...any) {
 	os.Exit(65)
 }
 
+func printTokens(tokens []scanner.Token) {
+	for _, token := range tokens {
+		fmt.Printf("Token(type=%v, lexeme=%s, literal=%v, line=%d)\n",
+			token.Type,
+			token.Lexeme,
+			scanner.StringLiteral(token.Literal),
+			token.Line,
+		)
+	}
+}
+
 func runREPL() {
 	reader := bufio.NewScanner(os.Stdin)
 
@@ -27,15 +38,7 @@ func runREPL() {
 
 		s := scanner.NewScanner(source)
 		tokens := s.ScanTokens()
-
-		for _, token := range tokens {
-			fmt.Printf("Token(type=%v, lexeme=%s, literal=%v, line=%d)\n",
-				token.Type,
-				token.Lexeme,
-				scanner.StringLiteral(token.Literal),
-				token.Line,
-			)
-		}
+		printTokens(tokens)
 	}
 
 	// check for input errors after the REPL loop ends
@@ -68,14 +71,7 @@ func main() {
 			os.Exit(65)
 		}
 
-		for _, token := range tokens {
-			fmt.Printf("Token(type=%v, lexeme=%s, literal=%v, line=%d)\n",
-				token.Type,
-				token.Lexeme,
-				scanner.StringLiteral(token.Literal),
-				token.Line,
-			)
-		}
+		printTokens(tokens)
 
 		return
 	}
