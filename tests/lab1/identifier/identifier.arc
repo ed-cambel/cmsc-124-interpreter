@@ -6,6 +6,11 @@ boon
 bane
 nil
 seal
+when
+lest
+augur
+sign
+fate
 
 grainy
 drama
@@ -15,6 +20,11 @@ boonish
 baneful
 nill
 sealed
+whens
+lestago
+augurrrr
+signature
+fated
 
 age
 name
