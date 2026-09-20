@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
@@ -12,9 +13,41 @@ func fail(format string, arguments ...any) {
 	os.Exit(65)
 }
 
+func runREPL() {
+	reader := bufio.NewScanner(os.Stdin)
+
+	for {
+		fmt.Print("> ")
+
+		if !reader.Scan() {
+			break
+		}
+
+		source := reader.Text()
+
+		s := scanner.NewScanner(source)
+		tokens := s.ScanTokens()
+
+		for _, token := range tokens {
+			fmt.Printf("Token(type=%v, lexeme=%s, literal=%v, line=%d)\n",
+				token.Type,
+				token.Lexeme,
+				scanner.StringLiteral(token.Literal),
+				token.Line,
+			)
+		}
+	}
+
+	// check for input errors after the REPL loop ends
+	if err := reader.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "lab1: error reading input: %v\n", err)
+	}
+}
+
 func main() {
-	if len(os.Args) < 2 {
-		fail("expected '--tokenize <source-file>'")
+	if len(os.Args) == 1 {
+		runREPL()
+		return
 	}
 
 	if os.Args[1] == "--tokenize" {
