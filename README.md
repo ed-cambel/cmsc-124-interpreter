@@ -43,7 +43,14 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 | Keyword | Purpose |
 |---|---|
-| [word] | [what it does] |
+| `grain` | Integer data type |
+| `dram` | Floating-point data type |
+| `scroll` | String data type |
+| `rune` | Character data type |
+| `boon` | Boolean value `true` |
+| `bane` | Boolean value `false`  |
+| `nil` | No-value literal |
+| `seal` | Constant declaration |
 
 
 ### Operators
@@ -51,20 +58,20 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
-| `+` | [arithmetic] | [binary] | TBD | TBD |
-| `-` | [arithmetic] | [binary] | TBD | TBD |
-| `*` | [arithmetic] | [binary] | TBD | TBD |
-| `/` | [arithmetic] | [binary] | TBD | TBD |
-| `%` | [arithmetic] | [binary] | TBD | TBD |
-| `!` | [logical] | [unary] | TBD | TBD |
-| `&&` | [logical] | [binary] | TBD | TBD |
-| `\|\|` | [logical] | [binary] | TBD | TBD |
-| `=` | [assignment] | [binary] | TBD | TBD |
-| `>` | [comparison] | [binary] | TBD | TBD |
-| `<` | [comparison] | [binary] | TBD | TBD |
-| `==` | [comparison] | [binary] | TBD | TBD |
-| `>=` | [comparison] | [binary] | TBD | TBD |
-| `<=`| [comparison] | [binary] | TBD | TBD |
+| `+` | arithmetic | binary | TBD | TBD |
+| `-` | arithmetic | binary | TBD | TBD |
+| `*` | arithmetic | binary | TBD | TBD |
+| `/` | arithmetic | binary | TBD | TBD |
+| `%` | arithmetic | binary | TBD | TBD |
+| `!` | logical | unary | TBD | TBD |
+| `&&` | logical | binary | TBD | TBD |
+| `\|\|` | logical | binary | TBD | TBD |
+| `->` | assignment | binary | TBD | TBD |
+| `>` | comparison | binary | TBD | TBD |
+| `<` | comparison | binary | TBD | TBD |
+| `==` | comparison | binary | TBD | TBD |
+| `>=` | comparison | binary | TBD | TBD |
+| `<=`| comparison | binary | TBD | TBD |
 | [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
 
 
@@ -75,15 +82,17 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 |---|---|---|
 | Number | `67`, `3.14`, `.5` | Integer or floating-point value |
 | String | `hello\n\tworld`, `quote: \"arkana\"` `yes\\no` | String value |
-| [boolean] | [true, false] | [what runtime value] |
-| [nil] | [spelling] | [what runtime value] |
+| Boolean | `boon`, `bane`] | `true`  or `false`|
+| Nil | `nil` | No value |
 
 
 ### Identifiers
 
-- Start characters: [which]
-- Continue characters: [which]
-- Case-sensitive: [yes or no]
+- Start characters: letters (`A-Z`, `a-z`) or `_`
+- Continue characters: letters, digits (`0-9`), or `_`
+- Case-sensitive: yes
+- Identifiers cannot begin with a digit.
+- Keywords are lowercase and are recognized only when the complete lexeme exactly matches a reserved keyword.
 - [Reserved patterns, length limits, or other restrictions.]
 
 ### Comments
@@ -247,5 +256,5 @@ approval of your own work.]
 | Activity | What changed in the language |
 |---|---|
 | Lab 1 | Established token output format (`TYPE LEXEME LITERAL LINE`) |
-| Lab 1 | Changed token output format (`Token(type=TYPE, lexeme=LEXEME, literal=LITERAL, line = LINE)`) |
+| Lab 1 | Changed token output format (`Token(type=TYPE, lexeme=LEXEME, literal=LITERAL, line=LINE)`) |
 | Lab 1 | Added scanner REPL through `./run` |
