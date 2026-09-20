@@ -55,6 +55,11 @@ var keywords = map[string]TokenType{
 	"sign":   SIGN,
 	"fate":   FATE,
 	
+	// function 
+	"spell":  SPELL,
+	"cast":   CAST,
+	"yield":  YIELD,
+
 	// add other keywords here
 }
 

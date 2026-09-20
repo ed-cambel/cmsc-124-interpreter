@@ -60,10 +60,13 @@ const (
 	SIGN
 	FATE
 
-	// TODO: More Witchcraft-themed keywords
-	BREW
+	// Function
 	SPELL
 	CAST
+	YIELD
+
+	// TODO: More Witchcraft-themed keywords
+	BREW
 
 	EOF
 )
@@ -156,6 +159,12 @@ func (t TokenType) String() string {
 		return "SIGN"
 	case FATE:
 		return "FATE"
+	case SPELL:
+		return "SPELL"
+	case CAST:
+		return "CAST"
+	case YIELD:
+		return "YIELD"
 	case EOF:
 		return "EOF"
 	default:
