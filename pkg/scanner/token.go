@@ -99,6 +99,8 @@ func (t TokenType) String() string {
 		return "SLASH"
 	case PERCENT:
 		return "PERCENT"
+	case ARROW:
+		return "ARROW"
 	case EQUAL:
 		return "EQUAL"
 	case LESS:
