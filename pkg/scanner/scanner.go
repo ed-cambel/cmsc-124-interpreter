@@ -116,8 +116,35 @@ func (s *Scanner) ScanTokens() []Token {
 				Line:   s.line,
 			})
 		case '/':
+			tempType := SLASH
+			if s.match('>') {
+				for {
+					if s.peek() == '\x00' {
+						break // eof check
+					}
+
+					if s.peek() == '\n' {
+						s.line++ // include newline in commenr
+					}
+
+					if s.peek() == '<' {
+						s.advance() // consume <
+
+						if s.match('/') {
+							break
+						}
+
+						continue
+					}
+
+					s.advance()
+				}
+
+				break
+			}
+
 			tokens = append(tokens, Token{
-				Type:   SLASH,
+				Type:   tempType,
 				Lexeme: string(char),
 				Line:   s.line,
 			})
