@@ -11,6 +11,9 @@ lest
 augur
 sign
 fate
+spell
+cast
+yield
 
 grainy
 drama
@@ -25,6 +28,9 @@ lestago
 augurrrr
 signature
 fated
+spellbound
+castaway
+yielded
 
 age
 name
