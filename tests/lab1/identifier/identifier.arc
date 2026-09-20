@@ -14,6 +14,9 @@ fate
 spell
 cast
 yield
+ritual
+skip
+dispel
 
 grainy
 drama
@@ -31,6 +34,9 @@ fated
 spellbound
 castaway
 yielded
+RITUAL
+skIP
+dIspel
 
 age
 name
