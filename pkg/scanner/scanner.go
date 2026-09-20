@@ -12,7 +12,7 @@ type Scanner struct {
 	start   int
 	current int
 	line    int
-	IsError	bool
+	IsError bool
 }
 
 // Constructor
@@ -30,6 +30,19 @@ func StringLiteral(literal any) any {
 	}
 
 	return literal
+}
+
+// Keyword Map
+var keywords = map[string]TokenType{
+	"grain":  GRAIN,
+	"dram":   DRAM,
+	"scroll": SCROLL,
+	"rune":   RUNE,
+	"boon":   BOON,
+	"bane":   BANE,
+	"nil":    NIL,
+	"seal":   SEAL,
+	// add other keywords here
 }
 
 // Main scanning function
@@ -215,6 +228,15 @@ func (s *Scanner) ScanTokens() []Token {
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 			lexeme := s.scanNumber()
 
+			if isAlpha(s.peek()) {
+				// since invalid identifier, needs to consume the rest of the invalid identifier
+				for isAlphaNumeric(s.peek()) {
+					s.advance()
+				}
+
+				s.printError("Invalid alphanumeric sequence.")
+			}
+
 			var literal any
 
 			if strings.Contains(lexeme, ".") {
@@ -232,22 +254,39 @@ func (s *Scanner) ScanTokens() []Token {
 		case '"': // indicates a string
 			tokenLine := s.line
 			literal, isValidString := s.scanString()
-			
+
 			if !isValidString {
 				s.printError("Unterminated string.")
 			} else {
-			tokens = append(tokens, Token{
-				Type:    STRING,
-				Lexeme:  s.source[s.start:s.current],
-				Literal: literal,
-				Line:    tokenLine,
-			})}
+				tokens = append(tokens, Token{
+					Type:    STRING,
+					Lexeme:  s.source[s.start:s.current],
+					Literal: literal,
+					Line:    tokenLine,
+				})
+			}
 		case ' ', '\t', '\r':
-			// ignore whitespaces, tabs, and carriage return	
+			// ignore whitespaces, tabs, and carriage return
 		case '\n':
 			s.line++
 		default:
-			s.printError(fmt.Sprintf("Unexpected character '%c'", char))
+			// checks first if its a valid start of keyword (either lowercase letters or _)
+			if isAlpha(char) {
+				lexeme := s.scanIdentifier() // ensures it consumes the whole word first
+
+				tokenType, isKeyword := keywords[lexeme]
+				if !isKeyword {
+					tokenType = IDENTIFIER
+				}
+
+				tokens = append(tokens, Token{
+					Type:   tokenType,
+					Lexeme: lexeme,
+					Line:   s.line,
+				})
+			} else {
+				s.printError(fmt.Sprintf("Unexpected character '%c'", char))
+			}
 		}
 
 	}
@@ -329,11 +368,30 @@ func (s *Scanner) scanString() (string, bool) {
 	if s.current >= len(s.source) {
 		return "", false
 	}
-	s.advance() // consume closing 
+	s.advance()                                    // consume closing
 	return s.source[s.start+1 : s.current-1], true // to not include double quotation marks
 }
 
 func (s *Scanner) printError(errMessage string) {
 	fmt.Fprintf(os.Stderr, "[Line %d] Error: %s\n", s.line, errMessage)
 	s.IsError = true
+}
+
+func isAlpha(char byte) bool {
+	// checks if valid start of an identifier (a letter)
+	return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || char == '_'
+}
+
+func isAlphaNumeric(char byte) bool {
+	// additionally checks if char is a number
+	return isAlpha(char) || (char >= '0' && char <= '9')
+}
+
+func (s *Scanner) scanIdentifier() string {
+	// loop stops when nonvalid characters are encountered (such as spaces or newlines)
+	for isAlphaNumeric(s.peek()) {
+		s.advance()
+	}
+
+	return s.source[s.start:s.current]
 }

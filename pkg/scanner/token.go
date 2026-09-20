@@ -39,9 +39,18 @@ const (
 	IDENTIFIER
 	STRING
 	NUMBER
-	TRUE
-	FALSE
+	BOON
+	BANE
 	NIL
+
+	// Data types
+	GRAIN
+	DRAM
+	SCROLL
+	RUNE
+
+	// Constant Declaration
+	SEAL
 
 	// Flow control keywords
 	IF
