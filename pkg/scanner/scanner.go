@@ -117,9 +117,11 @@ func (s *Scanner) ScanTokens() []Token {
 			})
 		case '/':
 			tempType := SLASH
+
 			if s.match('>') {
 				for {
 					if s.peek() == '\x00' {
+						s.printError("Unterminated comment block.")
 						break // eof check
 					}
 
@@ -241,7 +243,7 @@ func (s *Scanner) ScanTokens() []Token {
 				Line:    tokenLine,
 			})}
 		case ' ', '\t', '\r':
-			// ignore whitespaces, tabs, and carriage return
+			// ignore whitespaces, tabs, and carriage return	
 		case '\n':
 			s.line++
 		default:
