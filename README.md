@@ -13,6 +13,7 @@ This project involves designing and implementing an interpreter for a programmin
 ## Host language and build
 
 - Host language: Go 1.27.0
+- Module: `arkana`
 - Version metadata: `go.mod`
 - Build: `./build.sh`
 - [Anything a fresh clone needs to know.]
@@ -23,10 +24,10 @@ This project involves designing and implementing an interpreter for a programmin
 | Command | What it does |
 |---|---|
 | `./run <file>` | [Executes a program. Available from Lab 4.] |
-| `./run --tokenize <file>` | [Prints the token stream.] |
+| `./run --tokenize <file>` | Scans a source file and prints its token stream. |
 | `./run --parse <file>` | [Prints the parsed tree.] |
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
-| `./run` | [Starts the REPL.] |
+| `./run` | Starts the scanner REPL. |
 
 
 Exit codes: 0 when program runs successfully, 65 when semantic errors encountered, 70 [when].
@@ -236,6 +237,7 @@ approval of your own work.]
 
 ## Known limitations
 
+- The REPL currently supports lexical scanning only; parsing and evaluation are not yet implemented.
 - [What doesn't work, what is unimplemented, where behavior is worse than you
   would like.]
 
@@ -246,3 +248,4 @@ approval of your own work.]
 |---|---|
 | Lab 1 | Established token output format (`TYPE LEXEME LITERAL LINE`) |
 | Lab 1 | Changed token output format (`Token(type=TYPE, lexeme=LEXEME, literal=LITERAL, line = LINE)`) |
+| Lab 1 | Added scanner REPL through `./run` |
