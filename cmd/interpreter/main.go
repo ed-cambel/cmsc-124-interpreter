@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"arkana/pkg/parser"
 	"arkana/pkg/scanner"
 )
 
@@ -53,6 +54,7 @@ func main() {
 		return
 	}
 
+	// Lab 1
 	if os.Args[1] == "--tokenize" {
 		if len(os.Args) < 3 {
 			fail("expected source-file path after '--tokenize'")
@@ -72,6 +74,37 @@ func main() {
 		}
 
 		printTokens(tokens)
+
+		return
+	}
+
+	// Lab 2
+	if os.Args[1] == "--parse" {
+		if len(os.Args) < 3 {
+			fail("expected source-file path after '--parse'")
+		}
+
+		path := os.Args[2]
+		source, err := os.ReadFile(path)
+		if err != nil {
+			fail("cannot read '%s': %v", path, err)
+		}
+
+		s := scanner.NewScanner(string(source))
+		tokens := s.ScanTokens()
+
+		if s.IsError {
+			os.Exit(65)
+		}
+
+		p := parser.NewParser(tokens)
+		expression := p.Parse()
+
+		// AST printer will go here
+		//_ = expression
+
+		// temporary debug until printer is implemented
+		fmt.Printf("Type: %T, Value: %#v\n", expression, expression)
 
 		return
 	}
