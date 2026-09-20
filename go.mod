@@ -1,3 +1,3 @@
-module your-interpreter
+module arkana
 
 go 1.27.0

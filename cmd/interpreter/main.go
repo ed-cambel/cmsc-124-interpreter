@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"your-interpreter/pkg/scanner"
+	"arkana/pkg/scanner"
 )
 
 func fail(format string, arguments ...any) {
@@ -47,8 +47,7 @@ func main() {
 		return
 	}
 
-
-	// Lab 0 behavior	
+	// Lab 0 behavior
 	path := os.Args[1]
 	source, err := os.ReadFile(path)
 	if err != nil {
