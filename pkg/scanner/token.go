@@ -54,8 +54,11 @@ const (
 	SEAL
 
 	// Flow control keywords
-	IF
-	ELSE
+	WHEN 
+	LEST
+	AUGUR 
+	SIGN
+	FATE
 
 	// TODO: More Witchcraft-themed keywords
 	BREW
@@ -143,6 +146,16 @@ func (t TokenType) String() string {
 		return "NIL"
 	case SEAL:
 		return "SEAL"
+	case WHEN:
+		return "WHEN"
+	case LEST:
+		return "LEST"
+	case AUGUR:
+		return "AUGUR"
+	case SIGN:
+		return "SIGN"
+	case FATE:
+		return "FATE"
 	case EOF:
 		return "EOF"
 	default:
