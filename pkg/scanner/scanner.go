@@ -285,10 +285,20 @@ func (s *Scanner) ScanTokens() []Token {
 					tokenType = IDENTIFIER
 				}
 
+				var literal any
+
+				switch tokenType {
+				case BOON:
+					literal = true
+				case BANE:
+					literal = false
+				}
+
 				tokens = append(tokens, Token{
-					Type:   tokenType,
-					Lexeme: lexeme,
-					Line:   s.line,
+					Type:    tokenType,
+					Lexeme:  lexeme,
+					Literal: literal,
+					Line:    s.line,
 				})
 			} else {
 				s.printError(fmt.Sprintf("Unexpected character '%c'", char))

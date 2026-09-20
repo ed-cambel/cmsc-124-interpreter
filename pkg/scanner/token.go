@@ -123,6 +123,24 @@ func (t TokenType) String() string {
 		return "NUMBER"
 	case STRING:
 		return "STRING"
+	case IDENTIFIER:
+		return "IDENTIFIER"
+	case GRAIN:
+		return "GRAIN"
+	case DRAM:
+		return "DRAM"
+	case SCROLL:
+		return "SCROLL"
+	case RUNE:
+		return "RUNE"
+	case BOON:
+		return "BOON"
+	case BANE:
+		return "BANE"
+	case NIL:
+		return "NIL"
+	case SEAL:
+		return "SEAL"
 	case EOF:
 		return "EOF"
 	default:
