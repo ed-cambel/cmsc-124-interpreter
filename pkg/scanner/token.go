@@ -27,6 +27,7 @@ const (
 	NOT
 
 	// Assignment & Comparison operators
+	ARROW
 	EQUAL
 	LESS
 	GREATER

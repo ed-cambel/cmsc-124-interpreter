@@ -117,9 +117,15 @@ func (s *Scanner) ScanTokens() []Token {
 				Line:   s.line,
 			})
 		case '-':
+			tempType := MINUS
+
+			if s.match('>') {
+				tempType = ARROW
+			}
+
 			tokens = append(tokens, Token{
-				Type:   MINUS,
-				Lexeme: string(char),
+				Type:   tempType,
+				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
 		case '*':
