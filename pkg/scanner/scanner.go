@@ -34,14 +34,37 @@ func StringLiteral(literal any) any {
 
 // Keyword Map
 var keywords = map[string]TokenType{
+	// data types
 	"grain":  GRAIN,
 	"dram":   DRAM,
 	"scroll": SCROLL,
 	"rune":   RUNE,
+
+	// boolean values
 	"boon":   BOON,
 	"bane":   BANE,
 	"nil":    NIL,
+
+	// const declaration
 	"seal":   SEAL,
+
+	// conditionals
+	"when":	  WHEN,
+	"lest":   LEST,
+	"augur":  AUGUR,
+	"sign":   SIGN,
+	"fate":   FATE,
+	
+	// function 
+	"spell":  SPELL,
+	"cast":   CAST,
+	"yield":  YIELD,
+
+	// loop and jump statements
+	"ritual": RITUAL,
+	"skip":   SKIP,
+	"dispel": DISPEL,
+
 	// add other keywords here
 }
 
@@ -145,7 +168,7 @@ func (s *Scanner) ScanTokens() []Token {
 					}
 
 					if s.peek() == '\n' {
-						s.line++ // include newline in commenr
+						s.line++ // include newline in comment
 					}
 
 					if s.peek() == '<' {

@@ -6,6 +6,17 @@ boon
 bane
 nil
 seal
+when
+lest
+augur
+sign
+fate
+spell
+cast
+yield
+ritual
+skip
+dispel
 
 grainy
 drama
@@ -15,6 +26,17 @@ boonish
 baneful
 nill
 sealed
+whens
+lestago
+augurrrr
+signature
+fated
+spellbound
+castaway
+yielded
+RITUAL
+skIP
+dIspel
 
 age
 name

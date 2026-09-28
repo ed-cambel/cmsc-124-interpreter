@@ -41,7 +41,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 ### Keywords
 
 
-| Keyword | Purpose |
+| Keyword | Purpose          |
 |---|---|
 | `grain` | Integer data type |
 | `dram` | Floating-point data type |
@@ -51,6 +51,14 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 | `bane` | Boolean value `false`  |
 | `nil` | No-value literal |
 | `seal` | Constant declaration |
+| `when` |  Runs specific block of code if the condition evaluates to `boon`. |
+| `lest` |  Runs altervative block of code if the condition evaluates to `bane` or encounters `nil`. |
+| `augur` | Evaluates target variable or expression for matching |
+| `sign` | Defines literal value to match against target variable |
+| `fate` | Fallback block when no cases match |
+| `ritual` | Declares and initializes loop until condition becomes `bane` | 
+| `skip` | Skips to the next iteration of loop |
+| `dispel` | Terminates loop |
 
 
 ### Operators
@@ -98,7 +106,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 ### Comments
 
 - Line / Block comments: enclosed by opening tag (`/>`) and closing tag (`</`)
-- Nesting: [supported or not]
+- Nesting: not supported
 - [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
   token above.]
 

@@ -54,13 +54,24 @@ const (
 	SEAL
 
 	// Flow control keywords
-	IF
-	ELSE
+	WHEN 
+	LEST
+	AUGUR 
+	SIGN
+	FATE
+
+	// Function
+	SPELL
+	CAST
+	YIELD
+
+	// Loop and jump statements
+	RITUAL
+	SKIP
+	DISPEL
 
 	// TODO: More Witchcraft-themed keywords
 	BREW
-	SPELL
-	CAST
 
 	EOF
 )
@@ -143,6 +154,28 @@ func (t TokenType) String() string {
 		return "NIL"
 	case SEAL:
 		return "SEAL"
+	case WHEN:
+		return "WHEN"
+	case LEST:
+		return "LEST"
+	case AUGUR:
+		return "AUGUR"
+	case SIGN:
+		return "SIGN"
+	case FATE:
+		return "FATE"
+	case SPELL:
+		return "SPELL"
+	case CAST:
+		return "CAST"
+	case YIELD:
+		return "YIELD"
+	case RITUAL:
+		return "RITUAL"
+	case SKIP:
+		return "SKIP"
+	case DISPEL:
+		return "DISPEL"
 	case EOF:
 		return "EOF"
 	default:
