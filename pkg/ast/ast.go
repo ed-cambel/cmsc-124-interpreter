@@ -2,6 +2,8 @@
 
 package ast
 
+import "arkana/pkg/scanner"
+
 // ast expression interface: common type for all future expression nodes (Literal, Unary, Binary, Grouping)
 type Expr interface {
 	expr()
@@ -12,3 +14,11 @@ type Literal struct {
 }
 
 func (Literal) expr() {}
+
+type Binary struct {
+	Left     Expr
+	Operator scanner.Token
+	Right    Expr
+}
+
+func (Binary) expr() {}
