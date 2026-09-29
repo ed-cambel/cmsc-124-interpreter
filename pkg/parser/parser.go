@@ -17,6 +17,10 @@ func NewParser(tokens []scanner.Token) *Parser {
 	}
 }
 
+func (p *Parser) Parse() ast.Expr {
+	return p.factor()
+}
+
 func (p *Parser) factor() ast.Expr {
 	// TODO: Add unary parsing if unary ops are included
 	return p.primary()
