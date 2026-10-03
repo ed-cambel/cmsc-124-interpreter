@@ -15,6 +15,13 @@ type Literal struct {
 
 func (Literal) expr() {}
 
+type Unary struct {
+	Operator scanner.Token
+	Right    Expr
+}
+
+func (Unary) expr() {}
+	
 type Binary struct {
 	Left     Expr
 	Operator scanner.Token

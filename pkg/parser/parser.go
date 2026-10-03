@@ -26,6 +26,19 @@ func (p *Parser) factor() ast.Expr {
 	return p.primary()
 }
 
+func (p *Parser) unary() ast.Expr {
+	if p.match(scanner.NOT, scanner.MINUS) {
+		operator := p.previous()
+		right := p.unary()
+		return ast.Unary{
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return p.primary()
+}
+
 func (p *Parser) primary() ast.Expr {
 	token := p.advance()
 
