@@ -64,8 +64,34 @@ func (p *Parser) isAtEnd() bool {
 	return p.peek().Type == scanner.EOF
 }
 
-// TODO: implement other helper methods
-// match()
-// previous()
-// check()
-// consume()
+func (p *Parser) check(expected scanner.TokenType) bool {
+	if p.isAtEnd() {
+		return false
+	}
+
+	return p.peek().Type == expected
+}
+
+func (p *Parser) previous() scanner.Token {
+	return p.tokens[p.current-1]
+}
+
+func (p *Parser) match(expected ...scanner.TokenType) bool {
+	for _, tokenType := range expected {
+		if p.check(tokenType) {
+			p.advance()
+			return true
+		}
+	}
+	return false
+}
+
+
+func (p *Parser) consume(expected scanner.TokenType, message string) scanner.Token {
+	if p.check(expected) {
+		return p.advance()
+	} 
+	
+	// TODO: implement error handling rawr
+	panic(message)
+}
