@@ -18,7 +18,7 @@ func NewParser(tokens []scanner.Token) *Parser {
 }
 
 func (p *Parser) Parse() ast.Expr {
-	return p.factor()
+	return p.term()
 }
 
 func (p *Parser) factor() ast.Expr {
@@ -29,6 +29,22 @@ func (p *Parser) factor() ast.Expr {
 		right := p.unary()
 		expr = ast.Binary{
 			Left:     expr, //the old tree becomes the left child
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
+func (p *Parser) term() ast.Expr {
+	expr := p.factor()
+
+	for p.match(scanner.PLUS, scanner.MINUS) {
+		operator := p.previous()
+		right := p.factor()
+		expr = ast.Binary{
+			Left:     expr,
 			Operator: operator,
 			Right:    right,
 		}
