@@ -22,7 +22,19 @@ func (p *Parser) Parse() ast.Expr {
 }
 
 func (p *Parser) factor() ast.Expr {
-	return p.unary()
+	expr := p.unary() // left operand
+
+	for p.match(scanner.STAR, scanner.SLASH, scanner.PERCENT) {
+		operator := p.previous()
+		right := p.unary()
+		expr = ast.Binary{
+			Left:     expr, //the old tree becomes the left child
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
 }
 
 func (p *Parser) unary() ast.Expr {
