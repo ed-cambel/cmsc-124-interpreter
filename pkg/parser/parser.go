@@ -22,8 +22,7 @@ func (p *Parser) Parse() ast.Expr {
 }
 
 func (p *Parser) factor() ast.Expr {
-	// TODO: Add unary parsing if unary ops are included
-	return p.primary()
+	return p.unary()
 }
 
 func (p *Parser) unary() ast.Expr {
@@ -99,12 +98,11 @@ func (p *Parser) match(expected ...scanner.TokenType) bool {
 	return false
 }
 
-
 func (p *Parser) consume(expected scanner.TokenType, message string) scanner.Token {
 	if p.check(expected) {
 		return p.advance()
-	} 
-	
+	}
+
 	// TODO: implement error handling rawr
 	panic(message)
 }
