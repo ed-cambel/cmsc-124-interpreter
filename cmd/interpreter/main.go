@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"arkana/pkg/ast"
 	"arkana/pkg/parser"
 	"arkana/pkg/scanner"
 )
@@ -99,12 +100,10 @@ func main() {
 
 		p := parser.NewParser(tokens)
 		expression := p.Parse()
-
-		// AST printer will go here
-		//_ = expression
+		fmt.Println(ast.Print(expression))
 
 		// temporary debug until printer is implemented
-		fmt.Printf("Type: %T, Value: %#v\n", expression, expression)
+		// fmt.Printf("Type: %T, Value: %#v\n", expression, expression)
 
 		return
 	}

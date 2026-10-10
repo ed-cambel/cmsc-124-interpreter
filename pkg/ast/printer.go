@@ -1,13 +1,13 @@
 package ast
 
-import {
+import (
 	"fmt"
 	"strconv"
 	"strings"
-}
+)
 
+// switch-case is used for the "pattern match over node types" option, which replaces the visitor pattern
 // print returns the prefix parenthesized form of a tree, e.g. (+ 2.0 (* 3.0 4.0))
-
 func Print(e Expr) string {
 	switch n := e.(type) {
 	case Literal:
@@ -31,7 +31,7 @@ func formatLiteral(v any) string {
 	case float64:
 		s := strconv.FormatFloat(x, 'f', -1, 64)
 		if !strings.Contains(s, ".") {
-			s += ".0" 
+			s += ".0"
 		}
 		return s
 	case int:
