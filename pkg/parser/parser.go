@@ -81,6 +81,12 @@ func (p *Parser) primary() ast.Expr {
 		}
 	}
 
+	if token.Type == scanner.LEFT_PAREN {
+		expr := p.term() //change to p.expression() once that exists
+		p.consume(scanner.RIGHT_PAREN, "Expect ')' after expression.")
+		return ast.Grouping{Expression: expr}
+	}
+
 	return nil
 }
 

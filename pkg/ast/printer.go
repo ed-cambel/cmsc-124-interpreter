@@ -11,7 +11,7 @@ import (
 func Print(e Expr) string {
 	switch n := e.(type) {
 	case Literal:
-		return formatLiteral(m.Value)
+		return formatLiteral(n.Value)
 	case Grouping:
 		return "(group " + Print(n.Expression) + ")"
 	case Unary:
