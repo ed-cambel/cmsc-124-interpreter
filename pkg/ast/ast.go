@@ -21,7 +21,7 @@ type Unary struct {
 }
 
 func (Unary) expr() {}
-	
+
 type Binary struct {
 	Left     Expr
 	Operator scanner.Token
@@ -29,3 +29,9 @@ type Binary struct {
 }
 
 func (Binary) expr() {}
+
+type Grouping struct {
+	Expression Expr
+}
+
+func (Grouping) expr() {}
