@@ -11,7 +11,7 @@ import (
 func Print(e Expr) string {
 	switch n := e.(type) {
 	case Literal:
-		return formatLiteral(n.Value)
+		return FormatLiteral(n.Value)
 	case Grouping:
 		return "(group " + Print(n.Expression) + ")"
 	case Unary:
@@ -23,8 +23,7 @@ func Print(e Expr) string {
 	return "<unknown>"
 }
 
-// numbers always print with a decimal point so 2 and 2.0 are one string
-func formatLiteral(v any) string {
+func FormatLiteral(v any) string {
 	switch x := v.(type) {
 	case nil:
 		return "nil"
@@ -43,7 +42,7 @@ func formatLiteral(v any) string {
 		// the scanner returns int for whole numbers
 		return strconv.Itoa(x)
 	default:
-		// bool and string
+		// strings print without quotes
 		return fmt.Sprint(x)
 	}
 }
