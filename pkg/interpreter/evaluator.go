@@ -9,7 +9,7 @@ func Evaluate(e ast.Expr) any {
 		return n.Value
 	case ast.Grouping:
 		return Evaluate(n.Expression)
-		// TODO: add cases for ast.Unary (-, !) and ast.Binary
-	}
+	} // TODO: add cases for ast.Unary (-, !) and ast.Binary
+
 	return nil
 }

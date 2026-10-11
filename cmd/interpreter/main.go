@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"arkana/pkg/ast"
+	"arkana/pkg/interpreter"
 	"arkana/pkg/parser"
 	"arkana/pkg/scanner"
 )
@@ -104,6 +105,32 @@ func main() {
 
 		// temporary debug until printer is implemented
 		// fmt.Printf("Type: %T, Value: %#v\n", expression, expression)
+
+		return
+	}
+
+	// Lab 3
+	if os.Args[1] == "--eval" {
+		if len(os.Args) < 3 {
+			fail("expected source-file path after '--eval'")
+		}
+
+		path := os.Args[2]
+		source, err := os.ReadFile(path)
+		if err != nil {
+			fail("cannot read '%s': %v", path, err)
+		}
+
+		s := scanner.NewScanner(string(source))
+		tokens := s.ScanTokens()
+
+		if s.IsError {
+			os.Exit(65)
+		}
+
+		p := parser.NewParser(tokens)
+		expression := p.Parse() // since our parser can only parse one line for now...
+		fmt.Println(interpreter.Stringify(interpreter.Evaluate(expression)))
 
 		return
 	}
