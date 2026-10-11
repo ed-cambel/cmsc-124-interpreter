@@ -28,6 +28,11 @@ func formatLiteral(v any) string {
 	switch x := v.(type) {
 	case nil:
 		return "nil"
+	case bool:
+		if x {
+			return "boon"
+		}
+		return "bane"
 	case float64:
 		s := strconv.FormatFloat(x, 'f', -1, 64)
 		if !strings.Contains(s, ".") {
