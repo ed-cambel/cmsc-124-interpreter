@@ -41,7 +41,7 @@ func formatLiteral(v any) string {
 		return s
 	case int:
 		// the scanner returns int for whole numbers
-		return fmt.Sprintf("%d.0", x)
+		return strconv.Itoa(x)
 	default:
 		// bool and string
 		return fmt.Sprint(x)
