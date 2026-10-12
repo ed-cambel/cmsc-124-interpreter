@@ -108,13 +108,11 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 - Line / Block comments: enclosed by opening tag (`/>`) and closing tag (`</`)
 - Nesting: not supported
-- [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
-  token above.]
 
 ## Whitespace and termination
 
-- Whitespace significant: [yes or no, and where]
-- Statement terminator: [e.g. semicolon, newline, none]
+- Whitespace significant: no
+- Statement terminator: semicolon (`;`)
 - Block delimiters: [e.g. braces, indentation]
 - Grouping delimiters: [e.g. parentheses]
 
@@ -132,7 +130,6 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 
 ```
 program    → statement* EOF
-statement  → expression ";"
 expression → or
 or         → and ( OR and )*
 and        → equality ( AND equality )*
@@ -242,6 +239,7 @@ Run locally with:
 curl -sSL https://raw.githubusercontent.com/WhiteLicorice/cmsc-124-harness/v1.1/run_tests.py -o run_tests.py
 ./build.sh
 python3 run_tests.py tests/lab1
+python3 run_tests.py tests/lab2
 ```
 
 ## Sample code
@@ -258,6 +256,7 @@ Output:
 
 ## Design rationale
 
+- Empty or comment-only files are treated as success cases. In the grammar section, `program → statement* EOF` defines zero or more expressions.
 [Why the language is the way it is. Cover the choices that surprised you, the
 features you cut, and the decisions you reversed. Specific reasons, not
 approval of your own work.]
