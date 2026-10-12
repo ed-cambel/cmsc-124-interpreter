@@ -17,7 +17,20 @@ func NewParser(tokens []scanner.Token) *Parser {
 	}
 }
 
-func (p *Parser) Parse() ast.Expr {
+// reads the whole token list as a sequence of expressions each ending in semicolon
+func (p *Parser) Parse() []ast.Expr {
+	exprs := []ast.Expr{}
+
+	for !p.isAtEnd() {
+		expr := p.expression()
+		p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+		exprs = append(exprs, expr)
+	}
+
+	return exprs
+}
+
+func (p *Parser) expression() ast.Expr {
 	return p.or()
 }
 
@@ -53,7 +66,7 @@ func (p *Parser) and() ast.Expr {
 	return expr
 }
 
-func (p *Parser) equality() ast.Expr { 
+func (p *Parser) equality() ast.Expr {
 	expr := p.comparison()
 
 	for p.match(scanner.EQUAL_EQUAL, scanner.NOT_EQUAL) {
@@ -131,7 +144,7 @@ func (p *Parser) unary() ast.Expr {
 
 func (p *Parser) primary() ast.Expr {
 
-	if p.match(scanner.NUMBER, scanner.STRING, scanner.BOON, scanner.BANE, scanner.NIL) {	
+	if p.match(scanner.NUMBER, scanner.STRING, scanner.BOON, scanner.BANE, scanner.NIL) {
 		return ast.Literal{
 			Value: p.previous().Literal,
 		}

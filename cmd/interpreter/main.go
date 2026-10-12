@@ -99,11 +99,9 @@ func main() {
 		}
 
 		p := parser.NewParser(tokens)
-		expression := p.Parse()
-		fmt.Println(ast.Print(expression))
-
-		// temporary debug until printer is implemented
-		// fmt.Printf("Type: %T, Value: %#v\n", expression, expression)
+		for _, expression := range p.Parse() { // p.Parse() returns a list of trees
+			fmt.Println(ast.Print(expression))
+		}
 
 		return
 	}
