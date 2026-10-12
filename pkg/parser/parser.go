@@ -67,22 +67,15 @@ func (p *Parser) unary() ast.Expr {
 }
 
 func (p *Parser) primary() ast.Expr {
-	token := p.advance()
 
-	if token.Type == scanner.BOON {
+	if p.match(scanner.NUMBER, scanner.STRING, scanner.BOON, scanner.BANE, scanner.NIL) {	
 		return ast.Literal{
-			Value: token.Literal,
+			Value: p.previous().Literal,
 		}
 	}
 
-	if token.Type == scanner.NUMBER {
-		return ast.Literal{
-			Value: token.Literal,
-		}
-	}
-
-	if token.Type == scanner.LEFT_PAREN {
-		expr := p.term() //change to p.expression() once that exists
+	if p.match(scanner.LEFT_PAREN) {
+		expr := p.or() //change to p.expression() once that exists
 		p.consume(scanner.RIGHT_PAREN, "Expect ')' after expression.")
 		return ast.Grouping{Expression: expr}
 	}
