@@ -9,7 +9,22 @@ func Evaluate(e ast.Expr) any {
 		return n.Value
 	case ast.Grouping:
 		return Evaluate(n.Expression)
-	} // TODO: add cases for ast.Unary (-, !) and ast.Binary
 
-	return nil
-}
+	case ast.Unary:
+		right := Evaluate(n.Right)
+
+		switch n.Operator.Type {
+		case scanner.MINUS:
+			checkNumberOperand(n.Operator, right)
+			switch x := right.(type) {
+			case int:
+				return -x
+			case float64:
+				return -x
+			}
+
+		case scanner.NOT:
+			return !isTruthy(right)
+		}
+
+		panic("Unknown unary operator: " + n.Operator.Lexeme)
