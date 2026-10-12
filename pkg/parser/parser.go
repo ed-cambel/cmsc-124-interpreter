@@ -18,7 +18,70 @@ func NewParser(tokens []scanner.Token) *Parser {
 }
 
 func (p *Parser) Parse() ast.Expr {
-	return p.term()
+	return p.or()
+}
+
+func (p *Parser) or() ast.Expr {
+	expr := p.and()
+
+	for p.match(scanner.OR) {
+		operator := p.previous()
+		right := p.and()
+		expr = ast.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
+func (p *Parser) and() ast.Expr {
+	expr := p.equality()
+
+	for p.match(scanner.AND) {
+		operator := p.previous()
+		right := p.equality()
+		expr = ast.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
+func (p *Parser) equality() ast.Expr { 
+	expr := p.comparison()
+
+	for p.match(scanner.EQUAL_EQUAL, scanner.NOT_EQUAL) {
+		operator := p.previous()
+		right := p.comparison()
+		expr = ast.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+func (p *Parser) comparison() ast.Expr {
+	expr := p.term()
+
+	for p.match(scanner.LESS, scanner.LESS_EQUAL, scanner.GREATER, scanner.GREATER_EQUAL) {
+		operator := p.previous()
+		right := p.term()
+		expr = ast.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
 }
 
 func (p *Parser) factor() ast.Expr {
