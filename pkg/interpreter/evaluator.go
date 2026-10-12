@@ -1,12 +1,16 @@
 package interpreter
 
-import "arkana/pkg/ast"
+import (
+	"arkana/pkg/ast"
+	"arkana/pkg/scanner"
+)
 
 // Evaluate walks the tree post-order and returns the node's value
 func Evaluate(e ast.Expr) any {
 	switch n := e.(type) {
 	case ast.Literal:
 		return n.Value
+
 	case ast.Grouping:
 		return Evaluate(n.Expression)
 
