@@ -57,7 +57,7 @@ func Evaluate(e ast.Expr) any {
 			case int:
 				return left.(int) + x
 			case float64:
-				return left.(float64) + x
+				return left.(float64) + x	// TODO: string concatenation
 			}
 		case scanner.MINUS:
 			checkNumberOperands(n.Operator, left, right)
