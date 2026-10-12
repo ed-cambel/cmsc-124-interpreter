@@ -1,4 +1,4 @@
-# [Language name]
+# Arkana
 
 ## Creators
 
@@ -13,7 +13,8 @@ This project involves designing and implementing an interpreter for a programmin
 ## Host language and build
 
 - Host language: Go 1.27.0
-- Version metadata: [file that pins it, e.g. rust-toolchain.toml, go.mod]
+- Module: `arkana`
+- Version metadata: `go.mod`
 - Build: `./build.sh`
 - [Anything a fresh clone needs to know.]
 
@@ -23,26 +24,41 @@ This project involves designing and implementing an interpreter for a programmin
 | Command | What it does |
 |---|---|
 | `./run <file>` | [Executes a program. Available from Lab 4.] |
-| `./run --tokenize <file>` | [Prints the token stream.] |
+| `./run --tokenize <file>` | Scans a source file and prints its token stream. |
 | `./run --parse <file>` | [Prints the parsed tree.] |
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
-| `./run` | [Starts the REPL.] |
+| `./run` | Starts the scanner REPL. |
 
 
-Exit codes: 0 [when], 65 [when], 70 [when].
+Exit codes: 0 when program runs successfully, 65 when semantic errors encountered, 70 [when].
 
 ## File extension
 
-`[.ext]` [Must match the `ext` field in every tests/lab*/manifest.json.]
+`.arc`
 
 ## Lexical structure
 
 ### Keywords
 
 
-| Keyword | Purpose |
+| Keyword | Purpose          |
 |---|---|
-| [word] | [what it does] |
+| `grain` | Integer data type |
+| `dram` | Floating-point data type |
+| `scroll` | String data type |
+| `rune` | Character data type |
+| `boon` | Boolean value `true` |
+| `bane` | Boolean value `false`  |
+| `nil` | No-value literal |
+| `seal` | Constant declaration |
+| `when` |  Runs specific block of code if the condition evaluates to `boon`. |
+| `lest` |  Runs altervative block of code if the condition evaluates to `bane` or encounters `nil`. |
+| `augur` | Evaluates target variable or expression for matching |
+| `sign` | Defines literal value to match against target variable |
+| `fate` | Fallback block when no cases match |
+| `ritual` | Declares and initializes loop until condition becomes `bane` | 
+| `skip` | Skips to the next iteration of loop |
+| `dispel` | Terminates loop |
 
 
 ### Operators
@@ -50,6 +66,20 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
+| `+` | arithmetic | binary | TBD | TBD |
+| `-` | arithmetic | binary | TBD | TBD |
+| `*` | arithmetic | binary | TBD | TBD |
+| `/` | arithmetic | binary | TBD | TBD |
+| `%` | arithmetic | binary | TBD | TBD |
+| `!` | logical | unary | TBD | TBD |
+| `&&` | logical | binary | TBD | TBD |
+| `\|\|` | logical | binary | TBD | TBD |
+| `->` | assignment | binary | TBD | TBD |
+| `>` | comparison | binary | TBD | TBD |
+| `<` | comparison | binary | TBD | TBD |
+| `==` | comparison | binary | TBD | TBD |
+| `>=` | comparison | binary | TBD | TBD |
+| `<=`| comparison | binary | TBD | TBD |
 | [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
 
 
@@ -58,24 +88,25 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Kind | Syntax | Produces |
 |---|---|---|
-| [number] | [e.g. 42, 3.14] | [what runtime value] |
-| [string] | [e.g. "hello", escapes supported] | [what runtime value] |
-| [boolean] | [true, false] | [what runtime value] |
-| [nil] | [spelling] | [what runtime value] |
+| Number | `67`, `3.14`, `.5` | Integer or floating-point value |
+| String | `hello\n\tworld`, `quote: \"arkana\"` `yes\\no` | String value |
+| Boolean | `boon`, `bane`] | `true`  or `false`|
+| Nil | `nil` | No value |
 
 
 ### Identifiers
 
-- Start characters: [which]
-- Continue characters: [which]
-- Case-sensitive: [yes or no]
+- Start characters: letters (`A-Z`, `a-z`) or `_`
+- Continue characters: letters, digits (`0-9`), or `_`
+- Case-sensitive: yes
+- Identifiers cannot begin with a digit.
+- Keywords are lowercase and are recognized only when the complete lexeme exactly matches a reserved keyword.
 - [Reserved patterns, length limits, or other restrictions.]
 
 ### Comments
 
-- Line comments: [token]
-- Block comments: [tokens, or "not supported"]
-- Nesting: [supported or not]
+- Line / Block comments: enclosed by opening tag (`/>`) and closing tag (`</`)
+- Nesting: not supported
 - [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
   token above.]
 
@@ -89,11 +120,12 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 ## Token output format
 
 ```
-[one line of real --tokenize output]
+Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ```
-
-[What each field means. Frozen as of Lab 1; changes are recorded in the
-changelog.]
+- type: the token's 'TokenType' as defined constants and printed in string form by `token.go`.
+- lexeme: the source text the token was scanned from, including surrounding text (e.g. a string's lexeme includes quotation marks: `"hello"`, a number's lexeme is just its digits: `123`).
+- literal: the token's represented value; strings and numbers are considered literals, operators and punctuation have no value and are considered \<nil>\.
+- line: the source line the token started on. 
 
 ## Grammar
 
@@ -166,7 +198,7 @@ true.]
 Message format:
 
 ```
-[one real static error]
+[Line 2] Error: Unexpected character '#'
 [one real runtime error]
 ```
 
@@ -222,6 +254,7 @@ approval of your own work.]
 
 ## Known limitations
 
+- The REPL currently supports lexical scanning only; parsing and evaluation are not yet implemented.
 - [What doesn't work, what is unimplemented, where behavior is worse than you
   would like.]
 
@@ -230,4 +263,6 @@ approval of your own work.]
 
 | Activity | What changed in the language |
 |---|---|
-| Lab 1 | [entry] |
+| Lab 1 | Established token output format (`TYPE LEXEME LITERAL LINE`) |
+| Lab 1 | Changed token output format (`Token(type=TYPE, lexeme=LEXEME, literal=LITERAL, line=LINE)`) |
+| Lab 1 | Added scanner REPL through `./run` |

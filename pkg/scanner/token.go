@@ -1,0 +1,184 @@
+// defines the types and structure of tokens produced by the scanner
+
+package scanner
+
+type TokenType int
+
+const (
+	// Single-character tokens
+	LEFT_PAREN TokenType = iota
+	RIGHT_PAREN
+	LEFT_BRACE
+	RIGHT_BRACE
+	COMMA
+	DOT
+	SEMICOLON
+
+	// Arithmetic operators
+	PLUS
+	MINUS
+	STAR
+	SLASH
+	PERCENT
+
+	// Logical operators
+	AND
+	OR
+	NOT
+
+	// Assignment & Comparison operators
+	ARROW
+	EQUAL
+	LESS
+	GREATER
+	EQUAL_EQUAL
+	NOT_EQUAL
+	LESS_EQUAL
+	GREATER_EQUAL
+
+	// Identifier & Literals
+	IDENTIFIER
+	STRING
+	NUMBER
+	BOON
+	BANE
+	NIL
+
+	// Data types
+	GRAIN
+	DRAM
+	SCROLL
+	RUNE
+
+	// Constant Declaration
+	SEAL
+
+	// Flow control keywords
+	WHEN 
+	LEST
+	AUGUR 
+	SIGN
+	FATE
+
+	// Function
+	SPELL
+	CAST
+	YIELD
+
+	// Loop and jump statements
+	RITUAL
+	SKIP
+	DISPEL
+
+	// TODO: More Witchcraft-themed keywords
+	BREW
+
+	EOF
+)
+
+type Token struct {
+	Type    TokenType
+	Lexeme  string
+	Literal any
+	Line    int
+}
+
+// method to print the name of TokenType instead of its number
+func (t TokenType) String() string {
+	switch t {
+	case LEFT_PAREN:
+		return "LEFT_PAREN"
+	case RIGHT_PAREN:
+		return "RIGHT_PAREN"
+	case LEFT_BRACE:
+		return "LEFT_BRACE"
+	case RIGHT_BRACE:
+		return "RIGHT_BRACE"
+	case COMMA:
+		return "COMMA"
+	case DOT:
+		return "DOT"
+	case SEMICOLON:
+		return "SEMICOLON"
+	case PLUS:
+		return "PLUS"
+	case MINUS:
+		return "MINUS"
+	case STAR:
+		return "STAR"
+	case SLASH:
+		return "SLASH"
+	case PERCENT:
+		return "PERCENT"
+	case ARROW:
+		return "ARROW"
+	case EQUAL:
+		return "EQUAL"
+	case LESS:
+		return "LESS"
+	case GREATER:
+		return "GREATER"
+	case EQUAL_EQUAL:
+		return "EQUAL_EQUAL"
+	case NOT_EQUAL:
+		return "NOT_EQUAL"
+	case LESS_EQUAL:
+		return "LESS_EQUAL"
+	case GREATER_EQUAL:
+		return "GREATER_EQUAL"
+	case AND:
+		return "AND"
+	case OR:
+		return "OR"
+	case NOT:
+		return "NOT"
+	case NUMBER:
+		return "NUMBER"
+	case STRING:
+		return "STRING"
+	case IDENTIFIER:
+		return "IDENTIFIER"
+	case GRAIN:
+		return "GRAIN"
+	case DRAM:
+		return "DRAM"
+	case SCROLL:
+		return "SCROLL"
+	case RUNE:
+		return "RUNE"
+	case BOON:
+		return "BOON"
+	case BANE:
+		return "BANE"
+	case NIL:
+		return "NIL"
+	case SEAL:
+		return "SEAL"
+	case WHEN:
+		return "WHEN"
+	case LEST:
+		return "LEST"
+	case AUGUR:
+		return "AUGUR"
+	case SIGN:
+		return "SIGN"
+	case FATE:
+		return "FATE"
+	case SPELL:
+		return "SPELL"
+	case CAST:
+		return "CAST"
+	case YIELD:
+		return "YIELD"
+	case RITUAL:
+		return "RITUAL"
+	case SKIP:
+		return "SKIP"
+	case DISPEL:
+		return "DISPEL"
+	case EOF:
+		return "EOF"
+	default:
+		return "UNKNOWN"
+	}
+}

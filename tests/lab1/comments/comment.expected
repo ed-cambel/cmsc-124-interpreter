@@ -1,0 +1,3 @@
+Token(type=STRING, lexeme="hi", literal=hi, line=1)
+Token(type=STRING, lexeme="67", literal=67, line=4)
+Token(type=EOF, lexeme=, literal=null, line=4)
