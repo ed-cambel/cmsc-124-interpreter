@@ -131,6 +131,8 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
+program    → statement* EOF
+statement  → expression ";"
 expression → or
 or         → and ( OR and )*
 and        → equality ( AND equality )*
