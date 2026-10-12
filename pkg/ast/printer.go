@@ -7,7 +7,7 @@ import (
 )
 
 // switch-case is used for the "pattern match over node types" option, which replaces the visitor pattern
-// print returns the prefix parenthesized form of a tree, e.g. (+ 2.0 (* 3.0 4.0))
+// Print returns the prefix parenthesized form of a tree, e.g. (+ 2 (* 3.0 4)) for the source 2 + 3.0 * 4
 func Print(e Expr) string {
 	switch n := e.(type) {
 	case Literal:
@@ -23,7 +23,6 @@ func Print(e Expr) string {
 	return "<unknown>"
 }
 
-// numbers always print with a decimal point so 2 and 2.0 are one string
 func formatLiteral(v any) string {
 	switch x := v.(type) {
 	case nil:
@@ -43,7 +42,7 @@ func formatLiteral(v any) string {
 		// the scanner returns int for whole numbers
 		return strconv.Itoa(x)
 	default:
-		// bool and string
+		// string
 		return fmt.Sprint(x)
 	}
 }
