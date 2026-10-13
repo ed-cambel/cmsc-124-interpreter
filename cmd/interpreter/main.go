@@ -40,12 +40,31 @@ func runREPL() {
 
 		s := scanner.NewScanner(source)
 		tokens := s.ScanTokens()
-		printTokens(tokens)
+		// printTokens(tokens) previously for scanner lab
+
+		if s.IsError {
+			continue // scanner already printed its error
+		}
+
+		n := len(tokens)
+		if n == 1 {
+			continue // just EOF = blank line or only a comment
+		}
+
+		p := parser.NewParser(tokens)
+		exprs := p.Parse()
+
+		if p.IsError {
+			continue // parser already printed its error
+		}
+		for _, expression := range exprs {
+			fmt.Println(ast.Print(expression))
+		}
 	}
 
 	// check for input errors after the REPL loop ends
 	if err := reader.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "lab1: error reading input: %v\n", err)
+		fmt.Fprintf(os.Stderr, "error reading input: %v\n", err)
 	}
 }
 
@@ -94,8 +113,13 @@ func main() {
 		s := scanner.NewScanner(string(source))
 		tokens := s.ScanTokens()
 
+		if s.IsError {
+			os.Exit(65)
+		}
+
 		p := parser.NewParser(tokens)
 		exprs := p.Parse()
+
 		if p.IsError {
 			os.Exit(65)
 		}
