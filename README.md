@@ -66,20 +66,21 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
-| `+` | arithmetic | binary | TBD | TBD |
-| `-` | arithmetic | binary | TBD | TBD |
-| `*` | arithmetic | binary | TBD | TBD |
-| `/` | arithmetic | binary | TBD | TBD |
-| `%` | arithmetic | binary | TBD | TBD |
-| `!` | logical | unary | TBD | TBD |
-| `&&` | logical | binary | TBD | TBD |
-| `\|\|` | logical | binary | TBD | TBD |
-| `->` | assignment | binary | TBD | TBD |
-| `>` | comparison | binary | TBD | TBD |
-| `<` | comparison | binary | TBD | TBD |
-| `==` | comparison | binary | TBD | TBD |
-| `>=` | comparison | binary | TBD | TBD |
-| `<=`| comparison | binary | TBD | TBD |
+| `+` | arithmetic | binary | left | 6 |
+| `-` | arithmetic | binary | left | 6 |
+| `*` | arithmetic | binary | left | 7 |
+| `/` | arithmetic | binary | left | 7 |
+| `%` | arithmetic | binary | left | 7 |
+| `-` | arithmetic | unary | right | 7 |
+| `!` | logical | unary | right | 8 |
+| `&&` | logical | binary | left | 3 |
+| `\|\|` | logical | binary | left | 2 |
+| `->` | assignment | binary | left | 1 |
+| `>` | comparison | binary | left | 5 |
+| `<` | comparison | binary | left | 5 |
+| `==` | comparison | binary | left | 4 |
+| `>=` | comparison | binary | left | 5 |
+| `<=`| comparison | binary | left | 5 |
 | [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
 
 
@@ -107,13 +108,11 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 - Line / Block comments: enclosed by opening tag (`/>`) and closing tag (`</`)
 - Nesting: not supported
-- [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
-  token above.]
 
 ## Whitespace and termination
 
-- Whitespace significant: yes, newlines separate expressions
-- Statement terminator: newline, with one expression per line and no semicolon
+- Whitespace significant: no
+- Statement terminator: semicolon (`;`)
 - Block delimiters: [e.g. braces, indentation]
 - Grouping delimiters: parentheses
 
@@ -130,8 +129,16 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-[Your complete context-free grammar, current as of the latest activity.
-Unambiguous, with precedence and associativity encoded in rule structure.]
+program    → statement* EOF
+expression → or
+or         → and ( OR and )*
+and        → equality ( AND equality )*
+equality   → comparison ( ( EQUAL_EQUAL | NOT_EQUAL ) comparison )*
+comparison → term ( ( LESS | LESS_EQUAL | GREATER | GREATER_EQUAL ) term )*
+term       → factor ( ( PLUS | MINUS ) factor )*
+factor     → unary ( ( STAR | SLASH | PERCENT ) unary )*
+unary      → ( NOT | MINUS ) unary | primary
+primary    → NUMBER | STRING | BOON | BANE | NIL | LEFT_PAREN expression RIGHT_PAREN
 ```
 
 ## Parse output format
@@ -232,6 +239,7 @@ Run locally with:
 curl -sSL https://raw.githubusercontent.com/WhiteLicorice/cmsc-124-harness/v1.1/run_tests.py -o run_tests.py
 ./build.sh
 python3 run_tests.py tests/lab1
+python3 run_tests.py tests/lab2
 ```
 
 ## Sample code
@@ -248,6 +256,7 @@ Output:
 
 ## Design rationale
 
+- Empty or comment-only files are treated as success cases. In the grammar section, `program → statement* EOF` defines zero or more expressions.
 [Why the language is the way it is. Cover the choices that surprised you, the
 features you cut, and the decisions you reversed. Specific reasons, not
 approval of your own work.]
