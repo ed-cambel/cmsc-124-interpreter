@@ -94,12 +94,13 @@ func main() {
 		s := scanner.NewScanner(string(source))
 		tokens := s.ScanTokens()
 
-		if s.IsError {
+		p := parser.NewParser(tokens)
+		exprs := p.Parse()
+		if p.IsError {
 			os.Exit(65)
 		}
 
-		p := parser.NewParser(tokens)
-		for _, expression := range p.Parse() { // p.Parse() returns a list of trees
+		for _, expression := range exprs { // p.Parse() returns a list of trees
 			fmt.Println(ast.Print(expression))
 		}
 
