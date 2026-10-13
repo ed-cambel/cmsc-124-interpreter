@@ -1,13 +1,19 @@
 package parser
 
 import (
+	"fmt"
+	"os"
+
 	"arkana/pkg/ast"
 	"arkana/pkg/scanner"
 )
 
+type parseAbort struct{}
+
 type Parser struct {
 	tokens  []scanner.Token
 	current int
+	IsError bool
 }
 
 // Constructor
@@ -22,9 +28,9 @@ func (p *Parser) Parse() []ast.Expr {
 	exprs := []ast.Expr{}
 
 	for !p.isAtEnd() {
-		expr := p.expression()
-		p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
-		exprs = append(exprs, expr)
+		if expr := p.parseExpression(); expr != nil {
+			exprs = append(exprs, expr)
+		}
 	}
 
 	return exprs
@@ -32,6 +38,22 @@ func (p *Parser) Parse() []ast.Expr {
 
 func (p *Parser) expression() ast.Expr {
 	return p.or()
+}
+
+func (p *Parser) parseExpression() (expr ast.Expr) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(parseAbort); !ok {
+				panic(r) 
+			}
+			p.synchronize()
+			expr = nil
+		}
+	}()
+
+	expr = p.expression()
+	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+	return expr
 }
 
 func (p *Parser) or() ast.Expr {
@@ -156,7 +178,8 @@ func (p *Parser) primary() ast.Expr {
 		return ast.Grouping{Expression: expr}
 	}
 
-	return nil
+	p.ParseError(p.peek(), "Expect expression")
+	panic(parseAbort{})
 }
 
 // Helper Methods
@@ -206,6 +229,31 @@ func (p *Parser) consume(expected scanner.TokenType, message string) scanner.Tok
 		return p.advance()
 	}
 
-	// TODO: implement error handling rawr
-	panic(message)
+	p.ParseError(p.peek(), message)
+	panic(parseAbort{})
+}
+
+func (p *Parser) ParseError(token scanner.Token, message string) {
+    if p.isAtEnd() {
+		p.errorMessage(token.Line, " at the end", message)
+	} else {
+		p.errorMessage(token.Line,  " at '"+ token.Lexeme +"'", message)
+	}
+}
+
+func (p *Parser) errorMessage (line int, where, message string) {
+	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", line, where, message)
+	p.IsError = true
+}
+
+func (p *Parser) synchronize() {
+	if !p.isAtEnd() {
+		p.advance() // always make progress
+	}
+	for !p.isAtEnd() {
+		if p.previous().Type == scanner.SEMICOLON {
+			return
+		}
+		p.advance()
+	}
 }
