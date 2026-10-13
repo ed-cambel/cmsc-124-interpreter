@@ -4,7 +4,7 @@ package ast
 
 import "arkana/pkg/scanner"
 
-// ast expression interface: common type for all future expression nodes (Literal, Unary, Binary, Grouping)
+// ast expression interface: common type for all expression nodes (Literal, Unary, Binary, Grouping)
 type Expr interface {
 	expr()
 }
