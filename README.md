@@ -25,7 +25,7 @@ This project involves designing and implementing an interpreter for a programmin
 |---|---|
 | `./run <file>` | [Executes a program. Available from Lab 4.] |
 | `./run --tokenize <file>` | Scans a source file and prints its token stream. |
-| `./run --parse <file>` | [Prints the parsed tree.] |
+| `./run --parse <file>` | Parses each line of a source file and prints one tree per expression in prefix form. |
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
 | `./run` | Starts the scanner REPL. |
 
@@ -114,7 +114,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 - Whitespace significant: no
 - Statement terminator: semicolon (`;`)
 - Block delimiters: [e.g. braces, indentation]
-- Grouping delimiters: [e.g. parentheses]
+- Grouping delimiters: parentheses
 
 ## Token output format
 
