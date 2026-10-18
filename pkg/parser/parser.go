@@ -14,6 +14,7 @@ type Parser struct {
 	tokens  []scanner.Token
 	current int
 	IsError bool
+	exprs 	[]ast.Expr
 }
 
 // Constructor
@@ -38,22 +39,6 @@ func (p *Parser) Parse() []ast.Expr {
 
 func (p *Parser) expression() ast.Expr {
 	return p.or()
-}
-
-func (p *Parser) parseExpression() (expr ast.Expr) {
-	defer func() {
-		if r := recover(); r != nil {
-			if _, ok := r.(parseAbort); !ok {
-				panic(r) 
-			}
-			p.synchronize()
-			expr = nil
-		}
-	}()
-
-	expr = p.expression()
-	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
-	return expr
 }
 
 func (p *Parser) or() ast.Expr {
@@ -240,11 +225,22 @@ func (p *Parser) consume(expected scanner.TokenType, message string) scanner.Tok
 	panic(parseAbort{})
 }
 
-func (p *Parser) ParseError(token scanner.Token, message string) {
-    if p.isAtEnd() {
-		p.errorMessage(token.Line, " at the end", message)
-	} else {
-		p.errorMessage(token.Line,  " at '"+ token.Lexeme +"'", message)
+// checks syntax of expressions and reports errors
+func (p *Parser) parseExpression() {
+	defer p.recoverExpression()
+
+	expr := p.expression()
+	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+	p.exprs = append(p.exprs, expr)
+}
+
+// catches syntax error panic and calls synchronize to skip to next expression
+func (p *Parser) recoverExpression() {
+	if r := recover(); r != nil {
+		if _, ok := r.(parseAbort); !ok {
+			panic(r) 
+		}   
+		p.synchronize()
 	}
 }
 
