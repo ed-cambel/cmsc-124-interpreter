@@ -46,19 +46,19 @@ func runREPL() {
 			continue // scanner already printed its error
 		}
 
-		n := len(tokens)
-		if n == 1 {
+		if len(tokens) == 1 {
 			continue // just EOF = blank line or only a comment
 		}
 
 		p := parser.NewParser(tokens)
-		exprs := p.Parse()
+		tree := p.Parse() // p.Parse() returns a Tree whose children are ASTs
 
 		if p.IsError {
 			continue // parser already printed its error
 		}
-		for _, expression := range exprs {
-			fmt.Println(ast.Print(expression))
+
+		for _, node := range tree.ASTs {
+			fmt.Println(ast.Print(node))
 		}
 	}
 
@@ -118,14 +118,14 @@ func main() {
 		}
 
 		p := parser.NewParser(tokens)
-		exprs := p.Parse()
+		tree := p.Parse() // p.Parse() returns a Tree whose children are the program's ASTs
 
 		if p.IsError {
 			os.Exit(65)
 		}
 
-		for _, expression := range exprs { // p.Parse() returns a list of trees
-			fmt.Println(ast.Print(expression))
+		for _, node := range tree.ASTs {
+			fmt.Println(ast.Print(node))
 		}
 
 		return
