@@ -253,7 +253,6 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 // skips to after the terminator or eof
 func (p *Parser) synchronize() {
 	if !p.isAtEnd() {
-		p.advance() // always make progress
 		p.advance() 
 	}
 	for !p.isAtEnd() {
