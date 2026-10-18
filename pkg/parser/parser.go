@@ -14,6 +14,7 @@ type Parser struct {
 	tokens  []scanner.Token
 	current int
 	IsError bool
+	exprs 	[]ast.Expr
 }
 
 // Constructor
@@ -25,35 +26,15 @@ func NewParser(tokens []scanner.Token) *Parser {
 
 // reads the whole token list as a sequence of expressions each ending in semicolon
 func (p *Parser) Parse() []ast.Expr {
-	exprs := []ast.Expr{}
-
 	for !p.isAtEnd() {
-		if expr := p.parseExpression(); expr != nil {
-			exprs = append(exprs, expr)
-		}
+		p.parseExpression()
 	}
 
-	return exprs
+	return p.exprs
 }
 
 func (p *Parser) expression() ast.Expr {
 	return p.or()
-}
-
-func (p *Parser) parseExpression() (expr ast.Expr) {
-	defer func() {
-		if r := recover(); r != nil {
-			if _, ok := r.(parseAbort); !ok {
-				panic(r) 
-			}
-			p.synchronize()
-			expr = nil
-		}
-	}()
-
-	expr = p.expression()
-	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
-	return expr
 }
 
 func (p *Parser) or() ast.Expr {
@@ -240,22 +221,39 @@ func (p *Parser) consume(expected scanner.TokenType, message string) scanner.Tok
 	panic(parseAbort{})
 }
 
-func (p *Parser) ParseError(token scanner.Token, message string) {
-    if p.isAtEnd() {
-		p.errorMessage(token.Line, " at the end", message)
-	} else {
-		p.errorMessage(token.Line,  " at '"+ token.Lexeme +"'", message)
+// checks syntax of expressions and reports errors
+func (p *Parser) parseExpression() {
+	defer p.recoverExpression()
+
+	expr := p.expression()
+	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+	p.exprs = append(p.exprs, expr)
+}
+
+// catches syntax error panic and calls synchronize to skip to next expression
+func (p *Parser) recoverExpression() {
+	if r := recover(); r != nil {
+		if _, ok := r.(parseAbort); !ok {
+			panic(r) 
+		}   
+		p.synchronize()
 	}
 }
 
-func (p *Parser) errorMessage (line int, where, message string) {
-	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", line, where, message)
+// prints error message and sets p.IsError 
+func (p *Parser) ParseError(token scanner.Token, message string) {
+    where := " at '" + token.Lexeme + "'"
+	if p.isAtEnd() {
+		where = " at the end"
+	}
+	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", token.Line, where, message)
 	p.IsError = true
 }
 
+// skips to after the terminator or eof
 func (p *Parser) synchronize() {
 	if !p.isAtEnd() {
-		p.advance() // always make progress
+		p.advance() 
 	}
 	for !p.isAtEnd() {
 		if p.previous().Type == scanner.SEMICOLON {
