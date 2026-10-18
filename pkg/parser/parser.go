@@ -14,7 +14,7 @@ type Parser struct {
 	tokens  []scanner.Token
 	current int
 	IsError bool
-	exprs 	[]ast.Expr
+	exprs   []ast.Expr
 }
 
 // Constructor
@@ -24,13 +24,15 @@ func NewParser(tokens []scanner.Token) *Parser {
 	}
 }
 
-// reads the whole token list as a sequence of expressions each ending in semicolon
-func (p *Parser) Parse() []ast.Expr {
+// Parse returns a Tree whose children are the file's expressions, one AST per valid statement, in source order
+// statements with syntax errors are skipped and p.IsError is set
+func (p *Parser) Parse() ast.Tree {
+
 	for !p.isAtEnd() {
 		p.parseExpression()
 	}
 
-	return p.exprs
+	return ast.Tree{ASTs: p.exprs}
 }
 
 func (p *Parser) expression() ast.Expr {
@@ -154,12 +156,12 @@ func (p *Parser) primary() ast.Expr {
 	}
 
 	if p.match(scanner.LEFT_PAREN) {
-		expr := p.or() //change to p.expression() once that exists
+		expr := p.expression()
 		p.consume(scanner.RIGHT_PAREN, "Expect ')' after expression.")
 		return ast.Grouping{Expression: expr}
 	}
 
-	p.ParseError(p.peek(), "Expect expression")
+	p.ParseError(p.peek(), "Expect expression.")
 	panic(parseAbort{})
 }
 
@@ -234,15 +236,15 @@ func (p *Parser) parseExpression() {
 func (p *Parser) recoverExpression() {
 	if r := recover(); r != nil {
 		if _, ok := r.(parseAbort); !ok {
-			panic(r) 
-		}   
+			panic(r)
+		}
 		p.synchronize()
 	}
 }
 
-// prints error message and sets p.IsError 
+// prints error message and sets p.IsError
 func (p *Parser) ParseError(token scanner.Token, message string) {
-    where := " at '" + token.Lexeme + "'"
+	where := " at '" + token.Lexeme + "'"
 	if p.isAtEnd() {
 		where = " at the end"
 	}
@@ -253,7 +255,7 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 // skips to after the terminator or eof
 func (p *Parser) synchronize() {
 	if !p.isAtEnd() {
-		p.advance() 
+		p.advance()
 	}
 	for !p.isAtEnd() {
 		if p.previous().Type == scanner.SEMICOLON {

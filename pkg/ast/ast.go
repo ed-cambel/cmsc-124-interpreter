@@ -35,3 +35,9 @@ type Grouping struct {
 }
 
 func (Grouping) expr() {}
+
+// Tree is the root of a whole file, its expressions in source order
+// not an Expr, so no expr() method
+type Tree struct {
+	ASTs []Expr // the root's children, one AST per valid statement
+}
