@@ -248,8 +248,13 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 	}
 }
 
-func (p *Parser) errorMessage (line int, where, message string) {
-	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", line, where, message)
+// prints error message and sets p.IsError 
+func (p *Parser) ParseError(token scanner.Token, message string) {
+    where := " at '" + token.Lexeme + "'"
+	if p.isAtEnd() {
+		where = " at the end"
+	}
+	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", token.Line, where, message)
 	p.IsError = true
 }
 
