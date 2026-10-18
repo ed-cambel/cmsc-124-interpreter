@@ -26,15 +26,11 @@ func NewParser(tokens []scanner.Token) *Parser {
 
 // reads the whole token list as a sequence of expressions each ending in semicolon
 func (p *Parser) Parse() []ast.Expr {
-	exprs := []ast.Expr{}
-
 	for !p.isAtEnd() {
-		if expr := p.parseExpression(); expr != nil {
-			exprs = append(exprs, expr)
-		}
+		p.parseExpression()
 	}
 
-	return exprs
+	return p.exprs
 }
 
 func (p *Parser) expression() ast.Expr {
