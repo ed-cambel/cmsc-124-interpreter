@@ -248,7 +248,7 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 	if p.isAtEnd() {
 		where = " at the end"
 	}
-	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", token.Line, where, message)
+	fmt.Fprintf(os.Stderr, "[Line %d] Error%s: %s\n", token.Line, where, message)
 	p.IsError = true
 }
 
