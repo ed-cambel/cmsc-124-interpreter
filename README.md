@@ -52,7 +52,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 | `nil` | No-value literal |
 | `seal` | Constant declaration |
 | `when` |  Runs specific block of code if the condition evaluates to `boon`. |
-| `lest` |  Runs altervative block of code if the condition evaluates to `bane` or encounters `nil`. |
+| `lest` |  Runs alternative block of code if the condition evaluates to `bane` or encounters `nil`. |
 | `augur` | Evaluates target variable or expression for matching |
 | `sign` | Defines literal value to match against target variable |
 | `fate` | Fallback block when no cases match |
@@ -81,7 +81,6 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 | `==` | comparison | binary | left | 4 |
 | `>=` | comparison | binary | left | 5 |
 | `<=`| comparison | binary | left | 5 |
-| [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
 
 
 ### Literals
@@ -129,26 +128,28 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-program    → statement* EOF
+program    → ( expression ";" )* EOF
 expression → or
-or         → and ( OR and )*
-and        → equality ( AND equality )*
-equality   → comparison ( ( EQUAL_EQUAL | NOT_EQUAL ) comparison )*
-comparison → term ( ( LESS | LESS_EQUAL | GREATER | GREATER_EQUAL ) term )*
-term       → factor ( ( PLUS | MINUS ) factor )*
-factor     → unary ( ( STAR | SLASH | PERCENT ) unary )*
-unary      → ( NOT | MINUS ) unary | primary
-primary    → NUMBER | STRING | BOON | BANE | NIL | LEFT_PAREN expression RIGHT_PAREN
+or         → and ( "||" and )*
+and        → equality ( "&&" equality )*
+equality   → comparison ( ( "==" | "!=" ) comparison )*
+comparison → term ( ( ">" | ">=" | "<" | "<=>" ) term )*
+term       → factor ( ( "+" | "-" ) factor )*
+factor     → unary ( ( "*" | "/" | "%" ) unary )*
+unary      → ( "!" | "-" ) unary | primary
+primary    → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
 ```
+
+A `;` ends each expression
 
 ## Parse output format
 
 ```
-[one line of real --parse output, e.g. (+ 1.0 (* 2.0 3.0))]
+(+ 1 2)
 ```
 
-- Groupings print as: [form]
-- Numbers print as: [form]
+- Groupings print as: `(group ...)`
+- Numbers print as: `4` `3.12`
 
 ## Semantics
 
