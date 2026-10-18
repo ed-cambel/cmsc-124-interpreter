@@ -250,9 +250,11 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 	p.IsError = true
 }
 
+// skips to after the terminator or eof
 func (p *Parser) synchronize() {
 	if !p.isAtEnd() {
 		p.advance() // always make progress
+		p.advance() 
 	}
 	for !p.isAtEnd() {
 		if p.previous().Type == scanner.SEMICOLON {
