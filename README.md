@@ -159,23 +159,36 @@ language.]
 
 ### Value printing
 
-- Numbers: [e.g. 5 rather than 5.0]
-- Nil: [spelling]
-- Strings: [with or without quotes]
+- Numbers: trailing `.0` will be kept as is (e.g `2.0 + 3.0` prints `5.0`); 
+- Nil: `nil`
+- Strings: without quotes (e.g. `“hello world”` prints `hello world`)
+- Non-terminating decimals: printed with up to 15 to 17 significant digits, as held by a `float64` (`1 / 3` prints `0.3333333333333333`)
+- Overflow: a result outside the 64-bit int range is a runtime error. `9223372036854775807 + 1` fails with `Integer overflow.`
+
 
 ### Truthiness
 
-[The complete rule. Which values are false in a condition; everything else is
-true.]
+- Only `bane`, `nil`, and the number `0` are false. Everything else is true, including `""`.
+- `!` applies to any type: `!nil` is `boon`, `!bane` is `boon`, `!boon` is `bane`, `!0` is `boon`.
+- `and` / `or` short-circuit and return the deciding operand.
 
 ### Operator semantics
 
-- Arithmetic: [accepted operand types]
-- `+` on strings: [concatenation, error, or coercion]
-- Mixed types: [what happens]
-- Comparison: [accepted operand types]
-- Equality across types: [false, or an error]
-- Division by zero: [value produced, or runtime error]
+- Evaluation order: left operand, then right
+- Arithmetic: `- * / %` and unary `-` accept numbers only. Operands are checked before the operation (`checkNumberOperand` for unary, `checkNumberOperands` for binary)
+  - `int op int` stays an int for `+ - * %`
+  - `int / int` is promoted to a float, (e.g. `5 / 2` is `2.5`);interger division will be added
+  - `int op float` converts the int to a float (e.g. `1 + 2.5` is `3.5`)
+  - `%` takes the sign of the left operand: `5.5 % 2.5` is `0.5` (`5.5 - 2.5*2`), `-5.5 % 2.5` is `-0.5` (`-5.5 - 2.5*(-2)`), `0.5 % 2` is `0.5`.
+- `+` on strings: string + string concatenates; mixed types result in an error (e.g. "a" + 1 is an error)
+- Comparison: `< <= > >=` accept numbers only and return a boolean. Strings are not comparable.
+- Equality across types: values of different types are not equal, (e.g. `1 == "1"` is `bane`). Values are compared by value, not by reference.
+  - `1 == 1.0` is `boon`, and `nil == nil` is `boon`.
+  - `nil == bane` is `bane`.
+  - `0.1 + 0.2 == 0.3` is `bane`. Floats are compared by exact value, and `0.1 + 0.2` could be stored as `0.30000000000000004`, which is not numerically equal to `0.3`.
+  - `-0` and `0` are equal
+- Division by zero:  `/` and `%` by zero are runtime errors.
+
 
 ### Scope and bindings
 
@@ -241,6 +254,7 @@ curl -sSL https://raw.githubusercontent.com/WhiteLicorice/cmsc-124-harness/v1.1/
 ./build.sh
 python3 run_tests.py tests/lab1
 python3 run_tests.py tests/lab2
+python3 run_tests.py tests/lab3
 ```
 
 ## Sample code
