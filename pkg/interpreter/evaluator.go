@@ -54,6 +54,9 @@ func Evaluate(e ast.Expr) any {
 
 		switch n.Operator.Type {
 		case scanner.PLUS:
+			// checks string concat first
+
+		
 			checkNumberOperands(n.Operator, left, right)
 			switch x := right.(type) {
 			case int:
@@ -81,7 +84,7 @@ func Evaluate(e ast.Expr) any {
 			checkNumberOperands(n.Operator, left, right)
 			switch x := right.(type) {
 			case int:
-				if x == 0 {
+				if x == 0 {	// TODO: implement int division
 					panic("Division by zero.") // TODO: handle this later
 				}
 				return left.(int) / x
@@ -101,13 +104,20 @@ func Evaluate(e ast.Expr) any {
 				return left.(int) % x
 			}
 
-		case scanner.LESS:
+		case scanner.LESS, scanner.LESS_EQUAL, scanner.GREATER, scanner.GREATER_EQUAL:
 			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				return left.(int) < x
-			case float64:
-				return left.(float64) < x
+			leftOp, _ := toFloat(left)
+			rightOp, _ := toFloat(right)
+
+			switch n.Operator.Type {
+			case scanner.LESS: 
+				return leftOp < rightOp
+			case scanner.LESS_EQUAL:
+				return leftOp <= rightOp
+			case scanner.GREATER:
+				return leftOp > rightOp
+			default:
+				return leftOp >= rightOp
 			}
 		case scanner.EQUAL_EQUAL:
 			return isEqual(left, right)
