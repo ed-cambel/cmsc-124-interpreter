@@ -152,8 +152,15 @@ func main() {
 		}
 
 		p := parser.NewParser(tokens)
-		expression := p.Parse() // since our parser can only parse one line for now...
-		fmt.Println(interpreter.Stringify(interpreter.Evaluate(expression)))
+		tree := p.Parse()
+
+		if p.IsError {
+			os.Exit(65)
+		}
+
+		for _, node := range tree.ASTs {
+			fmt.Println(interpreter.Stringify(interpreter.Evaluate(node)))
+		}
 
 		return
 	}
