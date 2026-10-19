@@ -35,8 +35,8 @@ func Evaluate(e ast.Expr) any {
 
 	case ast.Binary:
 		left := Evaluate(n.Left)
-		right := Evaluate(n.Right)
 
+		// && and || check since it decides from left value before touchign the right
 		switch n.Operator.Type {
 		case scanner.OR:
 			if isTruthy(left) {
@@ -50,6 +50,8 @@ func Evaluate(e ast.Expr) any {
 			return Evaluate(n.Right)
 		}
 
+		right := Evaluate(n.Right) // every other operator needs both sides
+
 		switch n.Operator.Type {
 		case scanner.PLUS:
 			checkNumberOperands(n.Operator, left, right)
@@ -57,7 +59,7 @@ func Evaluate(e ast.Expr) any {
 			case int:
 				return left.(int) + x
 			case float64:
-				return left.(float64) + x	// TODO: string concatenation
+				return left.(float64) + x // TODO: string concatenation
 			}
 		case scanner.MINUS:
 			checkNumberOperands(n.Operator, left, right)
@@ -75,7 +77,7 @@ func Evaluate(e ast.Expr) any {
 			case float64:
 				return left.(float64) * x
 			}
-		case scanner.SLASH: 
+		case scanner.SLASH:
 			checkNumberOperands(n.Operator, left, right)
 			switch x := right.(type) {
 			case int:
@@ -90,15 +92,14 @@ func Evaluate(e ast.Expr) any {
 				return left.(float64) / x
 			}
 		case scanner.PERCENT:
-			checkNumberOperands(n.Operator, left, right) 
-				switch x := right.(type) {
-				case int:
-					if x == 0 {
-						panic("Modulo by zero.") // TODO: handle this later
-					}
-					return left.(int) % x
+			checkNumberOperands(n.Operator, left, right)
+			switch x := right.(type) {
+			case int:
+				if x == 0 {
+					panic("Modulo by zero.") // TODO: handle this later
 				}
-			
+				return left.(int) % x
+			}
 
 		case scanner.LESS:
 			checkNumberOperands(n.Operator, left, right)
@@ -110,12 +111,13 @@ func Evaluate(e ast.Expr) any {
 			}
 		case scanner.EQUAL_EQUAL:
 			return isEqual(left, right)
-		
+		case scanner.NOT_EQUAL:
+			return !isEqual(left, right)
 		default:
 			panic("Unknown binary operator: " + n.Operator.Lexeme)
 		}
-	
+
 		panic("Unknown expression type.")
-	} 
+	}
 	panic("Unknown expression type.")
 }

@@ -1,0 +1,10 @@
+1 != 2;         /> expect: boon </
+1 != 1;         /> expect: bane </
+1 != 1.0;       /> expect: bane </
+"a" != "a";     /> expect: bane </
+"a" != "b";     /> expect: boon </
+1 != "1";       /> expect: boon </
+boon != bane;   /> expect: boon </
+boon != boon;   /> expect: bane </
+nil != nil;     /> expect: bane </
+nil != bane;    /> expect: boon </
