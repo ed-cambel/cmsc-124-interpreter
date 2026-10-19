@@ -299,7 +299,7 @@ func (s *Scanner) ScanTokens() []Token {
 		case '\n':
 			s.line++
 		default:
-			// checks first if its a valid start of keyword (either lowercase letters or _)
+			// checks first if its a valid start of identifier
 			if isAlpha(char) {
 				lexeme := s.scanIdentifier() // ensures it consumes the whole word first
 

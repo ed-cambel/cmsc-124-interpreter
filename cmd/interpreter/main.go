@@ -41,12 +41,31 @@ func runREPL() {
 
 		s := scanner.NewScanner(source)
 		tokens := s.ScanTokens()
-		printTokens(tokens)
+		// printTokens(tokens) previously for scanner lab
+
+		if s.IsError {
+			continue // scanner already printed its error
+		}
+
+		if len(tokens) == 1 {
+			continue // just EOF = blank line or only a comment
+		}
+
+		p := parser.NewParser(tokens)
+		tree := p.Parse() // p.Parse() returns a Tree whose children are ASTs
+
+		if p.IsError {
+			continue // parser already printed its error
+		}
+
+		for _, node := range tree.ASTs {
+			fmt.Println(ast.Print(node))
+		}
 	}
 
 	// check for input errors after the REPL loop ends
 	if err := reader.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "lab1: error reading input: %v\n", err)
+		fmt.Fprintf(os.Stderr, "error reading input: %v\n", err)
 	}
 }
 
@@ -100,11 +119,15 @@ func main() {
 		}
 
 		p := parser.NewParser(tokens)
-		expression := p.Parse()
-		fmt.Println(ast.Print(expression))
+		tree := p.Parse() // p.Parse() returns a Tree whose children are the program's ASTs
 
-		// temporary debug until printer is implemented
-		// fmt.Printf("Type: %T, Value: %#v\n", expression, expression)
+		if p.IsError {
+			os.Exit(65)
+		}
+
+		for _, node := range tree.ASTs {
+			fmt.Println(ast.Print(node))
+		}
 
 		return
 	}

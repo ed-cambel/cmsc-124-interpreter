@@ -25,12 +25,12 @@ This project involves designing and implementing an interpreter for a programmin
 |---|---|
 | `./run <file>` | [Executes a program. Available from Lab 4.] |
 | `./run --tokenize <file>` | Scans a source file and prints its token stream. |
-| `./run --parse <file>` | Parses each line of a source file and prints one tree per expression in prefix form. |
+| `./run --parse <file>` | Parses a source file as semicolon-terminated expressions and prints one tree per expression in prefix form. |
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
-| `./run` | Starts the scanner REPL. |
+| `./run` | Starts the REPL. Each line is parsed and its trees printed.|
 
 
-Exit codes: 0 when program runs successfully, 65 when semantic errors encountered, 70 [when].
+Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error is encountered, 70 [when].
 
 ## File extension
 
@@ -52,7 +52,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 | `nil` | No-value literal |
 | `seal` | Constant declaration |
 | `when` |  Runs specific block of code if the condition evaluates to `boon`. |
-| `lest` |  Runs altervative block of code if the condition evaluates to `bane` or encounters `nil`. |
+| `lest` |  Runs alternative block of code if the condition evaluates to `bane` or encounters `nil`. |
 | `augur` | Evaluates target variable or expression for matching |
 | `sign` | Defines literal value to match against target variable |
 | `fate` | Fallback block when no cases match |
@@ -66,21 +66,22 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
-| `+` | arithmetic | binary | TBD | TBD |
-| `-` | arithmetic | binary | TBD | TBD |
-| `*` | arithmetic | binary | TBD | TBD |
-| `/` | arithmetic | binary | TBD | TBD |
-| `%` | arithmetic | binary | TBD | TBD |
-| `!` | logical | unary | TBD | TBD |
-| `&&` | logical | binary | TBD | TBD |
-| `\|\|` | logical | binary | TBD | TBD |
-| `->` | assignment | binary | TBD | TBD |
-| `>` | comparison | binary | TBD | TBD |
-| `<` | comparison | binary | TBD | TBD |
-| `==` | comparison | binary | TBD | TBD |
-| `>=` | comparison | binary | TBD | TBD |
-| `<=`| comparison | binary | TBD | TBD |
-| [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
+| `+` | arithmetic | binary | left | 6 |
+| `-` | arithmetic | binary | left | 6 |
+| `*` | arithmetic | binary | left | 7 |
+| `/` | arithmetic | binary | left | 7 |
+| `%` | arithmetic | binary | left | 7 |
+| `-` | arithmetic | unary | right | 8 |
+| `!` | logical | unary | right | 8 |
+| `&&` | logical | binary | left | 3 |
+| `\|\|` | logical | binary | left | 2 |
+| `->` | assignment | binary | right | TBD |
+| `>` | comparison | binary | left | 5 |
+| `<` | comparison | binary | left | 5 |
+| `==` | comparison | binary | left | 4 |
+| `!=` | comparison | binary | left | 4 |
+| `>=` | comparison | binary | left | 5 |
+| `<=`| comparison | binary | left | 5 |
 
 
 ### Literals
@@ -90,7 +91,7 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 |---|---|---|
 | Number | `67`, `3.14`, `.5` | Integer or floating-point value |
 | String | `hello\n\tworld`, `quote: \"arkana\"` `yes\\no` | String value |
-| Boolean | `boon`, `bane`] | `true`  or `false`|
+| Boolean | `boon`, `bane` | `true`  or `false`|
 | Nil | `nil` | No value |
 
 
@@ -107,13 +108,11 @@ Exit codes: 0 when program runs successfully, 65 when semantic errors encountere
 
 - Line / Block comments: enclosed by opening tag (`/>`) and closing tag (`</`)
 - Nesting: not supported
-- [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
-  token above.]
 
 ## Whitespace and termination
 
-- Whitespace significant: yes, newlines separate expressions
-- Statement terminator: newline, with one expression per line and no semicolon
+- Whitespace significant: no
+- Statement terminator: semicolon (`;`)
 - Block delimiters: [e.g. braces, indentation]
 - Grouping delimiters: parentheses
 
@@ -130,18 +129,26 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-[Your complete context-free grammar, current as of the latest activity.
-Unambiguous, with precedence and associativity encoded in rule structure.]
+program    → ( expression ";" )* EOF
+expression → or
+or         → and ( "||" and )*
+and        → equality ( "&&" equality )*
+equality   → comparison ( ( "==" | "!=" ) comparison )*
+comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term       → factor ( ( "+" | "-" ) factor )*
+factor     → unary ( ( "*" | "/" | "%" ) unary )*
+unary      → ( "!" | "-" ) unary | primary
+primary    → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
 ```
 
 ## Parse output format
 
 ```
-[one line of real --parse output, e.g. (+ 1.0 (* 2.0 3.0))]
+(+ 1 2)
 ```
 
-- Groupings print as: [form]
-- Numbers print as: [form]
+- Groupings print as: `(group ...)` e.g. `(* (group (+ 2 3)) 4)`
+- Numbers print as: whole numbers plainly `4`, numbers with a decimal point keep it `3.12`
 
 ## Semantics
 
@@ -199,6 +206,7 @@ Message format:
 
 ```
 [Line 2] Error: Unexpected character '#'
+[Line 1] Error at ';': Expect expression.
 [one real runtime error]
 ```
 
@@ -232,6 +240,7 @@ Run locally with:
 curl -sSL https://raw.githubusercontent.com/WhiteLicorice/cmsc-124-harness/v1.1/run_tests.py -o run_tests.py
 ./build.sh
 python3 run_tests.py tests/lab1
+python3 run_tests.py tests/lab2
 ```
 
 ## Sample code
@@ -248,13 +257,16 @@ Output:
 
 ## Design rationale
 
+- Empty or comment-only files are treated as success cases. In the grammar section, `program → statement* EOF` defines zero or more expressions.
+- Semicolon (`;`) as terminator, because it makes the end unambiguous and gives the parser a clear point to resume after a syntax error, while newline rules would need line checks in every binary loop.
+- Ints and floats kept as separate kinds, with 2 and 2.0 printing differently.
 [Why the language is the way it is. Cover the choices that surprised you, the
 features you cut, and the decisions you reversed. Specific reasons, not
 approval of your own work.]
 
 ## Known limitations
 
-- The REPL currently supports lexical scanning only; parsing and evaluation are not yet implemented.
+- The REPL parses each line and prints its trees. `;` is required, as in files. It doesn't evaluate until Lab 3. 
 - [What doesn't work, what is unimplemented, where behavior is worse than you
   would like.]
 
@@ -266,3 +278,5 @@ approval of your own work.]
 | Lab 1 | Established token output format (`TYPE LEXEME LITERAL LINE`) |
 | Lab 1 | Changed token output format (`Token(type=TYPE, lexeme=LEXEME, literal=LITERAL, line=LINE)`) |
 | Lab 1 | Added scanner REPL through `./run` |
+| Lab 2 | Added ; as the expression terminator |
+| Lab 2 | Edited REPL to now parse and print trees |

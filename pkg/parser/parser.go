@@ -1,13 +1,20 @@
 package parser
 
 import (
+	"fmt"
+	"os"
+
 	"arkana/pkg/ast"
 	"arkana/pkg/scanner"
 )
 
+type parseAbort struct{}
+
 type Parser struct {
 	tokens  []scanner.Token
 	current int
+	IsError bool
+	exprs   []ast.Expr
 }
 
 // Constructor
@@ -17,18 +24,76 @@ func NewParser(tokens []scanner.Token) *Parser {
 	}
 }
 
-func (p *Parser) Parse() ast.Expr {
-	return p.term()
+// Parse returns a Tree whose children are the file's expressions, one AST per valid statement, in source order
+// statements with syntax errors are skipped and p.IsError is set
+func (p *Parser) Parse() ast.Tree {
+
+	for !p.isAtEnd() {
+		p.parseExpression()
+	}
+
+	return ast.Tree{ASTs: p.exprs}
 }
 
-func (p *Parser) factor() ast.Expr {
-	expr := p.unary() // left operand
+func (p *Parser) expression() ast.Expr {
+	return p.or()
+}
 
-	for p.match(scanner.STAR, scanner.SLASH, scanner.PERCENT) {
+func (p *Parser) or() ast.Expr {
+	expr := p.and()
+
+	for p.match(scanner.OR) {
 		operator := p.previous()
-		right := p.unary()
+		right := p.and()
 		expr = ast.Binary{
-			Left:     expr, //the old tree becomes the left child
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
+func (p *Parser) and() ast.Expr {
+	expr := p.equality()
+
+	for p.match(scanner.AND) {
+		operator := p.previous()
+		right := p.equality()
+		expr = ast.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
+func (p *Parser) equality() ast.Expr {
+	expr := p.comparison()
+
+	for p.match(scanner.EQUAL_EQUAL, scanner.NOT_EQUAL) {
+		operator := p.previous()
+		right := p.comparison()
+		expr = ast.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+func (p *Parser) comparison() ast.Expr {
+	expr := p.term()
+
+	for p.match(scanner.LESS, scanner.LESS_EQUAL, scanner.GREATER, scanner.GREATER_EQUAL) {
+		operator := p.previous()
+		right := p.term()
+		expr = ast.Binary{
+			Left:     expr,
 			Operator: operator,
 			Right:    right,
 		}
@@ -53,6 +118,22 @@ func (p *Parser) term() ast.Expr {
 	return expr
 }
 
+func (p *Parser) factor() ast.Expr {
+	expr := p.unary() // left operand
+
+	for p.match(scanner.STAR, scanner.SLASH, scanner.PERCENT) {
+		operator := p.previous()
+		right := p.unary()
+		expr = ast.Binary{
+			Left:     expr, //the old tree becomes the left child
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
 func (p *Parser) unary() ast.Expr {
 	if p.match(scanner.NOT, scanner.MINUS) {
 		operator := p.previous()
@@ -67,31 +148,26 @@ func (p *Parser) unary() ast.Expr {
 }
 
 func (p *Parser) primary() ast.Expr {
-	token := p.advance()
 
-	if token.Type == scanner.BOON {
+	if p.match(scanner.NUMBER, scanner.STRING, scanner.BOON, scanner.BANE, scanner.NIL) {
 		return ast.Literal{
-			Value: token.Literal,
+			Value: p.previous().Literal,
 		}
 	}
 
-	if token.Type == scanner.NUMBER {
-		return ast.Literal{
-			Value: token.Literal,
-		}
-	}
-
-	if token.Type == scanner.LEFT_PAREN {
-		expr := p.term() //change to p.expression() once that exists
+	if p.match(scanner.LEFT_PAREN) {
+		expr := p.expression()
 		p.consume(scanner.RIGHT_PAREN, "Expect ')' after expression.")
 		return ast.Grouping{Expression: expr}
 	}
 
-	return nil
+	p.ParseError(p.peek(), "Expect expression.")
+	panic(parseAbort{})
 }
 
 // Helper Methods
 
+// returns current token and moves forward one position (consumes it) but never moves past EOF
 func (p *Parser) advance() scanner.Token {
 	token := p.tokens[p.current]
 
@@ -102,14 +178,17 @@ func (p *Parser) advance() scanner.Token {
 	return token
 }
 
+// returns current token without consuming (lookahead only)
 func (p *Parser) peek() scanner.Token {
 	return p.tokens[p.current]
 }
 
+// reports whether current token is EOF
 func (p *Parser) isAtEnd() bool {
 	return p.peek().Type == scanner.EOF
 }
 
+// reports whether current token is of the expected type, w/o consuming (false at EOF)
 func (p *Parser) check(expected scanner.TokenType) bool {
 	if p.isAtEnd() {
 		return false
@@ -118,10 +197,12 @@ func (p *Parser) check(expected scanner.TokenType) bool {
 	return p.peek().Type == expected
 }
 
+// returns the most recently consumed token (the one just before current)
 func (p *Parser) previous() scanner.Token {
 	return p.tokens[p.current-1]
 }
 
+// consumes the current token if it matches any of the given types and returns true; otherwise, consumes nothing and returns false
 func (p *Parser) match(expected ...scanner.TokenType) bool {
 	for _, tokenType := range expected {
 		if p.check(tokenType) {
@@ -132,11 +213,54 @@ func (p *Parser) match(expected ...scanner.TokenType) bool {
 	return false
 }
 
+// requires current token to be the expected type: it consumes and returns if it so; otherwise, reports an error
 func (p *Parser) consume(expected scanner.TokenType, message string) scanner.Token {
 	if p.check(expected) {
 		return p.advance()
 	}
 
-	// TODO: implement error handling rawr
-	panic(message)
+	p.ParseError(p.peek(), message)
+	panic(parseAbort{})
+}
+
+// checks syntax of expressions and reports errors
+func (p *Parser) parseExpression() {
+	defer p.recoverExpression()
+
+	expr := p.expression()
+	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+	p.exprs = append(p.exprs, expr)
+}
+
+// catches syntax error panic and calls synchronize to skip to next expression
+func (p *Parser) recoverExpression() {
+	if r := recover(); r != nil {
+		if _, ok := r.(parseAbort); !ok {
+			panic(r)
+		}
+		p.synchronize()
+	}
+}
+
+// prints error message and sets p.IsError
+func (p *Parser) ParseError(token scanner.Token, message string) {
+	where := " at '" + token.Lexeme + "'"
+	if p.isAtEnd() {
+		where = " at the end"
+	}
+	fmt.Fprintf(os.Stderr, "[Line %d] Error%s: %s\n", token.Line, where, message)
+	p.IsError = true
+}
+
+// skips to after the terminator or eof
+func (p *Parser) synchronize() {
+	if !p.isAtEnd() {
+		p.advance()
+	}
+	for !p.isAtEnd() {
+		if p.previous().Type == scanner.SEMICOLON {
+			return
+		}
+		p.advance()
+	}
 }
