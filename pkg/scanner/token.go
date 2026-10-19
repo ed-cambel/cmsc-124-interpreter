@@ -72,7 +72,6 @@ const (
 
 	// TODO: More Witchcraft-themed keywords
 	BREW
-
 	EOF
 )
 
