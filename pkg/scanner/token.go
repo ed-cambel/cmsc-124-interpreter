@@ -54,9 +54,9 @@ const (
 	SEAL
 
 	// Flow control keywords
-	WHEN 
+	WHEN
 	LEST
-	AUGUR 
+	AUGUR
 	SIGN
 	FATE
 
@@ -69,6 +69,9 @@ const (
 	RITUAL
 	SKIP
 	DISPEL
+
+	// Output
+	REVEAL
 
 	// TODO: More Witchcraft-themed keywords
 	BREW
@@ -175,6 +178,8 @@ func (t TokenType) String() string {
 		return "SKIP"
 	case DISPEL:
 		return "DISPEL"
+	case REVEAL:
+		return "REVEAL"
 	case EOF:
 		return "EOF"
 	default:

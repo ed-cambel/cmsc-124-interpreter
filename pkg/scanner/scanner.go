@@ -41,29 +41,32 @@ var keywords = map[string]TokenType{
 	"rune":   RUNE,
 
 	// boolean values
-	"boon":   BOON,
-	"bane":   BANE,
-	"nil":    NIL,
+	"boon": BOON,
+	"bane": BANE,
+	"nil":  NIL,
 
 	// const declaration
-	"seal":   SEAL,
+	"seal": SEAL,
 
 	// conditionals
-	"when":	  WHEN,
-	"lest":   LEST,
-	"augur":  AUGUR,
-	"sign":   SIGN,
-	"fate":   FATE,
-	
-	// function 
-	"spell":  SPELL,
-	"cast":   CAST,
-	"yield":  YIELD,
+	"when":  WHEN,
+	"lest":  LEST,
+	"augur": AUGUR,
+	"sign":  SIGN,
+	"fate":  FATE,
+
+	// function
+	"spell": SPELL,
+	"cast":  CAST,
+	"yield": YIELD,
 
 	// loop and jump statements
 	"ritual": RITUAL,
 	"skip":   SKIP,
 	"dispel": DISPEL,
+
+	// print
+	"reveal": REVEAL,
 
 	// add other keywords here
 }
