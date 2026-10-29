@@ -1,0 +1,1 @@
+"a" - 1;   /> expect runtime error: Left operand must be a number. </
