@@ -164,7 +164,12 @@ func main() {
 		}
 
 		for _, node := range tree.ASTs {
-			fmt.Println(interpreter.Stringify(interpreter.Evaluate(node)))
+			value, err := interpreter.Interpret(node)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(70)
+			}
+			fmt.Println(interpreter.Stringify(value))
 		}
 
 		return
