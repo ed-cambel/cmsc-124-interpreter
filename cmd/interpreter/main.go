@@ -59,7 +59,12 @@ func runREPL() {
 		}
 
 		for _, node := range tree.ASTs {
-			fmt.Println(ast.Print(node))
+			value, err := interpreter.Interpret(node)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				break // stop this line; a runtime error ends the rest of the line, as in file mode
+			}
+			fmt.Println(interpreter.Stringify(value))
 		}
 	}
 

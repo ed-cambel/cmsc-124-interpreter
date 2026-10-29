@@ -1,3 +1,12 @@
+package interpreter
+
+import (
+	"fmt"
+
+	"arkana/pkg/ast"
+	"arkana/pkg/scanner"
+)
+
 // RuntimeError is the only error the evaluator throws on purpose
 type RuntimeError struct {
 	Token   scanner.Token
