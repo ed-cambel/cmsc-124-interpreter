@@ -9,3 +9,7 @@ bane == nil;    /> expect: bane </
 1.0 == 1;       /> expect: boon </
 1 == 1.5;       /> expect: bane </
 0 == 0.0;       /> expect: boon </
+boon == 1;      /> expect: bane </
+1 == boon;      /> expect: bane </
+bane == 0;      /> expect: bane </
+0 == bane;      /> expect: bane </

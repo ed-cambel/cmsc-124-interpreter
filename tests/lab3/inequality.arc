@@ -8,3 +8,4 @@ boon != bane;   /> expect: boon </
 boon != boon;   /> expect: bane </
 nil != nil;     /> expect: bane </
 nil != bane;    /> expect: boon </
+boon != 1;      /> expect: boon </
