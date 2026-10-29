@@ -23,14 +23,14 @@ This project involves designing and implementing an interpreter for a programmin
 
 | Command | What it does |
 |---|---|
-| `./run <file>` | [Executes a program. Available from Lab 4.] |
+| `./run <file>` | Executes a program. Only reveal statements produce output. |
 | `./run --tokenize <file>` | Scans a source file and prints its token stream. |
 | `./run --parse <file>` | Parses a source file as semicolon-terminated expressions and prints one tree per expression in prefix form. |
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
 | `./run` | Starts the REPL. Each line is parsed and its trees printed.|
 
 
-Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error is encountered, 70 [when].
+Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error is encountered, 70 when a runtime error occurs.
 
 ## File extension
 
@@ -59,6 +59,7 @@ Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error 
 | `ritual` | Declares and initializes loop until condition becomes `bane` | 
 | `skip` | Skips to the next iteration of loop |
 | `dispel` | Terminates loop |
+| `reveal` | Evaluates an expression and displays its value |
 
 
 ### Operators
@@ -129,16 +130,20 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-program    → ( expression ";" )* EOF
-expression → or
-or         → and ( "||" and )*
-and        → equality ( "&&" equality )*
-equality   → comparison ( ( "==" | "!=" ) comparison )*
-comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
-term       → factor ( ( "+" | "-" ) factor )*
-factor     → unary ( ( "*" | "/" | "%" ) unary )*
-unary      → ( "!" | "-" ) unary | primary
-primary    → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
+program     → declaration* EOF
+declaration → statement
+statement   → revStmt | exprStmt
+revStmt     → "reveal" expression ";"
+exprStmt    → expression ";"
+expression  → or
+or          → and ( "||" and )*
+and         → equality ( "&&" equality )*
+equality    → comparison ( ( "==" | "!=" ) comparison )*
+comparison  → term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term        → factor ( ( "+" | "-" ) factor )*
+factor      → unary ( ( "*" | "/" | "%" ) unary )*
+unary       → ( "!" | "-" ) unary | primary
+primary     → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
 ```
 
 ## Parse output format
@@ -266,7 +271,8 @@ approval of your own work.]
 
 ## Known limitations
 
-- The REPL parses each line and prints its trees. `;` is required, as in files. It doesn't evaluate until Lab 3. 
+- The REPL evaluates one expression per statement and prints its value. It doesn't accept `reveal` statements yet.
+- `--parse` and `--eval` only accept expressions terminated by `;`. 
 - [What doesn't work, what is unimplemented, where behavior is worse than you
   would like.]
 
@@ -280,3 +286,6 @@ approval of your own work.]
 | Lab 1 | Added scanner REPL through `./run` |
 | Lab 2 | Added ; as the expression terminator |
 | Lab 2 | Edited REPL to now parse and print trees |
+| Lab 3 | Edited REPL to now evaluate |
+| Lab 4 | Extended grammar to add reveal statements |
+| Lab 4 | ./run <file> now executes programs |
