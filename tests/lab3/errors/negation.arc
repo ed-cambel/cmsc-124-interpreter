@@ -1,0 +1,4 @@
+-"a";           /> expect runtime error: Operand must be a number. </
+-boon;          /> expect runtime error: Operand must be a number. </
+-bane;          /> expect runtime error: Operand must be a number. </
+-nil;          /> expect runtime error: Operand must be a number. </
