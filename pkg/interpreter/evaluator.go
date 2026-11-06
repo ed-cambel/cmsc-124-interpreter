@@ -97,12 +97,21 @@ func Evaluate(e ast.Expr) any {
 			return leftFloat * rightFloat
 
 		case scanner.SLASH:
-
 			checkNumberOperands(n.Operator, left, right)
 			if rightFloat == 0 {
 				panic(RuntimeError{Token: n.Operator, Message: "Division by zero."})
 			}
 			return leftFloat / rightFloat // int / int promotes to float
+
+		case scanner.SLASH_SLASH:
+			checkNumberOperands(n.Operator, left, right)
+			if !bothInt {
+				panic(RuntimeError{Token: n.Operator, Message: "Operands must be integers."})
+			}
+			if rightInt == 0 {
+				panic(RuntimeError{Token: n.Operator, Message: "Division by zero."})
+			}
+			return leftInt / rightInt // truncates toward zero
 
 		case scanner.PERCENT:
 			checkNumberOperands(n.Operator, left, right)

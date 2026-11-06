@@ -121,7 +121,7 @@ func (p *Parser) term() ast.Expr {
 func (p *Parser) factor() ast.Expr {
 	expr := p.unary() // left operand
 
-	for p.match(scanner.STAR, scanner.SLASH, scanner.PERCENT) {
+	for p.match(scanner.STAR, scanner.SLASH, scanner.SLASH_SLASH, scanner.PERCENT) {
 		operator := p.previous()
 		right := p.unary()
 		expr = ast.Binary{
