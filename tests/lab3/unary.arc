@@ -10,3 +10,6 @@
 !(boon && bane);    /> expect: boon </
 !boon == bane;      /> expect: boon </
 !(boon == bane);    /> expect: boon </
+!0;                 /> expect: boon </
+!nil;               /> expect: boon </
+!"hello";           /> expect: bane </
