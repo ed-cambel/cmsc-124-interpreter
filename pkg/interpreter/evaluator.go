@@ -128,7 +128,6 @@ func Evaluate(e ast.Expr) any {
 				return leftOp <= rightOp
 			case scanner.GREATER:
 				return leftOp > rightOp
-			default:
 				return leftOp >= rightOp
 			}
 		case scanner.EQUAL_EQUAL:
