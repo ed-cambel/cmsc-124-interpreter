@@ -106,13 +106,15 @@ func Evaluate(e ast.Expr) any {
 
 		case scanner.PERCENT:
 			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				if x == 0 {
-					panic(RuntimeError{Token: n.Operator, Message: "Modulo by zero."})
-				}
-				return left.(int) % x
+			if !bothInt {
+				panic(RuntimeError{Token: n.Operator, Message: "Operands must be integers."})
 			}
+
+			if rightInt == 0 {
+				panic(RuntimeError{Token: n.Operator, Message: "Modulo by zero."})
+			}
+
+			return leftInt % rightInt
 
 		case scanner.LESS, scanner.LESS_EQUAL, scanner.GREATER, scanner.GREATER_EQUAL:
 			checkNumberOperands(n.Operator, left, right)
