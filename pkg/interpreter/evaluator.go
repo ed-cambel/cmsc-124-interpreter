@@ -62,11 +62,11 @@ func Evaluate(e ast.Expr) any {
 		case scanner.PLUS:
 			leftStringOp, isTrueLeft := left.(string)
 			rightStringOp, isTrueRight := right.(string)
-			
-			// returns concatenated string if both are string 
+
+			// returns concatenated string if both are string
 			if isTrueLeft && isTrueRight {
-				return  leftStringOp + rightStringOp
-			} 
+				return leftStringOp + rightStringOp
+			}
 
 			if !isLeftNum || !isRightNum {
 				panic(RuntimeError{Token: n.Operator, Message: "Operands must be two numbers or two strings."})
@@ -84,13 +84,13 @@ func Evaluate(e ast.Expr) any {
 
 			if bothInt {
 				return leftInt - rightInt
-			} 
+			}
 
 			return leftFloat - rightFloat
 
 		case scanner.STAR:
 			checkNumberOperands(n.Operator, left, right)
-		
+
 			if bothInt {
 				return leftInt * rightInt
 			}
@@ -131,7 +131,7 @@ func Evaluate(e ast.Expr) any {
 			rightOp, _ := toFloat(right)
 
 			switch n.Operator.Type {
-			case scanner.LESS: 
+			case scanner.LESS:
 				return leftOp < rightOp
 			case scanner.LESS_EQUAL:
 				return leftOp <= rightOp

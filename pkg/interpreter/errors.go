@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 
-	"arkana/pkg/ast"
 	"arkana/pkg/scanner"
 )
 
@@ -18,15 +17,12 @@ func (e RuntimeError) Error() string {
 }
 
 // evaluates one expression and is the only place that recovers
-func Interpret(e ast.Expr) (value any, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			if re, ok := r.(RuntimeError); ok {
-				err = re
-				return
-			}
-			err = fmt.Errorf("Runtime error: internal error: %v", r) // never let a host panic escape
+func catch(err *error) {
+	if r := recover(); r != nil {
+		re, ok := r.(RuntimeError) // runtime error type
+		if !ok {
+			panic(r) // e.g. the "Unknown statement type." string, re-panic
 		}
-	}()
-	return Evaluate(e), nil
+		*err = re
+	}
 }
