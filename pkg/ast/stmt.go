@@ -19,3 +19,19 @@ type RevealStmt struct {
 }
 
 func (RevealStmt) stmt() {}
+
+// IfStmt evaluates a condition and executes one of two statements
+type IfStmt struct {
+	Condition Expr
+	Then      Stmt
+	Else      Stmt
+}
+
+func (IfStmt) stmt() {}
+
+// BlockStmt groups multiple statements together inside curly braces
+type BlockStmt struct {
+	Statements []Stmt
+}
+
+func (BlockStmt) stmt() {}
