@@ -208,8 +208,8 @@ func main() {
 		}
 	}
 
-	if _, err := os.Stdout.Write(source); err != nil {
-		fmt.Fprintf(os.Stderr, "lab0: cannot write output: %v\n", err)
-		os.Exit(70)
-	}
+	// if _, err := os.Stdout.Write(source); err != nil {
+	// 	fmt.Fprintf(os.Stderr, "lab0: cannot write output: %v\n", err)
+	// 	os.Exit(70)
+	// }
 }
