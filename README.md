@@ -130,10 +130,12 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-program 	→ declaration* EOF
+program 	 → declaration* EOF
 declaration → varDecl | statement
 varDecl    → "bind" IDENTIFIER ( "=" expression )? ";"
-statement  → revStmt | exprStmt | block
+statement  → revStmt | exprStmt | blockStmt | whenStmt
+whenStmt   → "when" "(" expression ")" statement ( "lest" statement )?
+blockStmt  → "{" statement* "}"
 revStmt    → "reveal" expression ";"
 exprStmt   → expression ";"
 block      → "{" declaration* "}"
