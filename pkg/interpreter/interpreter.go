@@ -20,6 +20,18 @@ func Execute(s ast.Stmt) (err error) {
 		Evaluate(n.Expression) // value is discarded
 	case ast.RevealStmt:
 		fmt.Println(Stringify(Evaluate(n.Expression)))
+	case ast.IfStmt:
+		if isTruthy(Evaluate(n.Condition)) {
+			return Execute(n.Then)
+		} else if n.Else != nil {
+			return Execute(n.Else)
+		}
+	case ast.BlockStmt:
+		for _, stmt := range n.Statements {
+			if err := Execute(stmt); err != nil {
+				return err
+			}
+		}
 	default:
 		panic("Unknown statement type.")
 	}
