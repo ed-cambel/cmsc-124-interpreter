@@ -13,6 +13,7 @@ type parseAbort struct{}
 type Parser struct {
 	tokens  []scanner.Token
 	current int
+	depth   int
 	IsError bool
 	exprs   []ast.Expr
 }
@@ -52,6 +53,14 @@ func (p *Parser) ParseProgram() []ast.Stmt {
 func (p *Parser) parseStatement() (stmt ast.Stmt) {
 	defer p.recoverStatement(&stmt)
 
+	if p.match(scanner.WHEN){
+		return p.ifStatement()
+	}
+
+	if p.match(scanner.LEFT_BRACE) {
+		return p.blockStatement()
+	}
+	
 	if p.match(scanner.REVEAL) {
 		value := p.expression()
 		p.consume(scanner.SEMICOLON, "Expect ';' after value.")
@@ -64,6 +73,37 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 
 func (p *Parser) expression() ast.Expr {
 	return p.or()
+}
+
+func (p *Parser) ifStatement() ast.Stmt {
+	p.consume(scanner.LEFT_PAREN, "Expect '(' after 'when'.")
+	condition := p.expression()
+	p.consume(scanner.RIGHT_PAREN, "Expect ')' after condition.")
+
+	thenBranch := p.parseStatement()
+	var elseBranch ast.Stmt
+	if p.match(scanner.LEST) {
+		elseBranch = p.parseStatement()
+	}
+
+	return ast.IfStmt{Condition: condition, Then: thenBranch, Else: elseBranch}
+}
+
+func (p *Parser) blockStatement() ast.Stmt {
+	p.depth++
+    defer func() { p.depth-- }()
+
+	var stmts []ast.Stmt
+	
+	// Parse statements until we reach a right brace or the end of the file
+	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
+		if stmt := p.parseStatement(); stmt != nil {
+			stmts = append(stmts, stmt)
+		}
+	}
+
+	p.consume(scanner.RIGHT_BRACE, "Expect '}' after block.")
+	return ast.BlockStmt{Statements: stmts}
 }
 
 func (p *Parser) or() ast.Expr {
@@ -292,12 +332,25 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 
 // skips to after the terminator or eof
 func (p *Parser) synchronize() {
+	if p.depth > 0 && p.check(scanner.RIGHT_BRACE){
+		return
+	}
+	
 	if !p.isAtEnd() {
 		p.advance()
 	}
 	for !p.isAtEnd() {
 		if p.previous().Type == scanner.SEMICOLON {
 			return
+		}
+
+		switch p.peek().Type {
+		case scanner.REVEAL, scanner.WHEN, scanner.LEFT_BRACE:
+			return
+		case scanner.LEST, scanner.RIGHT_BRACE:
+			if p.depth > 0 {
+				return
+			}	
 		}
 		p.advance()
 	}
