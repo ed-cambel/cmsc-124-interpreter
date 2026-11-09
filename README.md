@@ -114,7 +114,7 @@ Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error 
 
 - Whitespace significant: no
 - Statement terminator: semicolon (`;`)
-- Block delimiters: [e.g. braces, indentation]
+- Block delimiters: braces `{ }`
 - Grouping delimiters: parentheses
 
 ## Token output format
