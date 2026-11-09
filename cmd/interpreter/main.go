@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"arkana/pkg/ast"
+	"arkana/pkg/interpreter"
 	"arkana/pkg/parser"
 	"arkana/pkg/scanner"
 )
@@ -58,7 +59,12 @@ func runREPL() {
 		}
 
 		for _, node := range tree.ASTs {
-			fmt.Println(ast.Print(node))
+			value, err := interpreter.Interpret(node)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				break // stop this line; a runtime error ends the rest of the line, as in file mode
+			}
+			fmt.Println(interpreter.Stringify(value))
 		}
 	}
 
@@ -128,6 +134,49 @@ func main() {
 			fmt.Println(ast.Print(node))
 		}
 
+		return
+	}
+
+	// Lab 3
+	if os.Args[1] == "--eval" {
+		if len(os.Args) < 3 {
+			fail("expected source-file path after '--eval'")
+		}
+
+		path := os.Args[2]
+		source, err := os.ReadFile(path)
+		if err != nil {
+			fail("cannot read '%s': %v", path, err)
+		}
+
+		s := scanner.NewScanner(string(source))
+		tokens := s.ScanTokens()
+
+		if s.IsError {
+			os.Exit(65)
+		}
+
+		p := parser.NewParser(tokens)
+		tree := p.Parse()
+
+		if p.IsError {
+			os.Exit(65)
+		}
+
+		hasRuntimeError := false
+		for _, node := range tree.ASTs {
+			value, err := interpreter.Interpret(node)
+			if err != nil { 	
+				fmt.Fprintln(os.Stderr, err)
+				hasRuntimeError = true
+				continue 
+			}
+			fmt.Println(interpreter.Stringify(value))
+		}
+
+		if hasRuntimeError {
+			os.Exit(70)
+		}
 		return
 	}
 

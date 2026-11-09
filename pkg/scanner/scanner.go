@@ -175,6 +175,7 @@ func (s *Scanner) ScanTokens() []Token {
 						s.advance() // consume <
 
 						if s.match('/') {
+							tempType = SLASH_SLASH
 							break
 						}
 
@@ -187,9 +188,11 @@ func (s *Scanner) ScanTokens() []Token {
 				break
 			}
 
+			// TODO: implement integer division
+			
 			tokens = append(tokens, Token{
 				Type:   tempType,
-				Lexeme: string(char),
+				Lexeme: s.source[s.start:s.current],
 				Line:   s.line,
 			})
 		case '%':

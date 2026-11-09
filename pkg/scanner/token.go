@@ -19,6 +19,7 @@ const (
 	MINUS
 	STAR
 	SLASH
+	SLASH_SLASH
 	PERCENT
 
 	// Logical operators
@@ -72,7 +73,6 @@ const (
 
 	// TODO: More Witchcraft-themed keywords
 	BREW
-
 	EOF
 )
 

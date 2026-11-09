@@ -1,0 +1,12 @@
+1 == 1;         /> expect: boon </
+1 == 2;         /> expect: bane </
+1.5 == 1.5;     /> expect: boon </
+"a" == "a";     /> expect: boon </
+"a" == "b";     /> expect: bane </
+"abc" == "abc"; /> expect: boon </
+boon == boon;   /> expect: boon </
+bane == bane;   /> expect: boon </
+boon == bane;   /> expect: bane </
+nil == nil;     /> expect: boon </
+0 == -0;        /> expect: boon </
+0.0 == -0.0;    /> expect: boon </
