@@ -163,15 +163,20 @@ func main() {
 			os.Exit(65)
 		}
 
+		hasRuntimeError := false
 		for _, node := range tree.ASTs {
 			value, err := interpreter.Interpret(node)
-			if err != nil {
+			if err != nil { 	
 				fmt.Fprintln(os.Stderr, err)
-				os.Exit(70)
+				hasRuntimeError = true
+				continue 
 			}
 			fmt.Println(interpreter.Stringify(value))
 		}
 
+		if hasRuntimeError {
+			os.Exit(70)
+		}
 		return
 	}
 

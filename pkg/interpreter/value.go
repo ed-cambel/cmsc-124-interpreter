@@ -84,15 +84,15 @@ func isEqual(a, b any) bool {
 // for unary function
 func checkNumberOperand(op scanner.Token, n any) {
 	if _, ok := toFloat(n); !ok {
-		panic("Operand must be a number.")
+		panic(RuntimeError{Token: op, Message: "Operand must be a number."})
 	}
 }
 
 func checkNumberOperands(op scanner.Token, left, right any) {
 	if _, ok := toFloat(left); !ok {
-		panic("Left operand must be a number.")
+		panic(RuntimeError{Token: op, Message: "Left operand must be a number."})
 	}
 	if _, ok := toFloat(right); !ok {
-		panic("Right operand must be a number.")
+		panic(RuntimeError{Token: op, Message: "Right operand must be a number."})
 	}
 }

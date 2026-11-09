@@ -19,6 +19,7 @@ const (
 	MINUS
 	STAR
 	SLASH
+	SLASH_SLASH
 	PERCENT
 
 	// Logical operators
