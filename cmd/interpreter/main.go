@@ -166,10 +166,10 @@ func main() {
 		hasRuntimeError := false
 		for _, node := range tree.ASTs {
 			value, err := interpreter.Interpret(node)
-			if err != nil { 	
+			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				hasRuntimeError = true
-				continue 
+				continue
 			}
 			fmt.Println(interpreter.Stringify(value))
 		}
@@ -180,11 +180,32 @@ func main() {
 		return
 	}
 
-	// Lab 0 behavior
+	// Lab 0 behavior -> Lab 4: plain ./run executes a program
 	path := os.Args[1]
 	source, err := os.ReadFile(path)
 	if err != nil {
 		fail("cannot read '%s': %v", path, err)
+	}
+
+	s := scanner.NewScanner(string(source))
+	tokens := s.ScanTokens()
+
+	if s.IsError {
+		os.Exit(65)
+	}
+
+	p := parser.NewParser(tokens)
+	program := p.ParseProgram()
+
+	if p.IsError {
+		os.Exit(65) // nothing executes if any statement failed to parse
+	}
+
+	for _, stmt := range program {
+		if err := interpreter.Execute(stmt); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(70)
+		}
 	}
 
 	if _, err := os.Stdout.Write(source); err != nil {
