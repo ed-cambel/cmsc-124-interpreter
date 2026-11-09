@@ -26,7 +26,7 @@ This project involves designing and implementing an interpreter for a programmin
 | `./run <file>` | Executes a program. Only reveal statements produce output. |
 | `./run --tokenize <file>` | Scans a source file and prints its token stream. |
 | `./run --parse <file>` | Parses a source file as semicolon-terminated expressions and prints one tree per expression in prefix form. |
-| `./run --eval <file>` | [Evaluates each expression and prints its value.] |
+| `./run --eval <file>` | Evaluates each expression and prints its value. |
 | `./run` | Starts the REPL. Each line is parsed and its trees printed.|
 
 
@@ -59,7 +59,7 @@ Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error 
 | `ritual` | Declares and initializes loop until condition becomes `bane` | 
 | `skip` | Skips to the next iteration of loop |
 | `dispel` | Terminates loop |
-| `reveal` | Evaluates an expression and displays its value |
+| `reveal` | Evaluates an expression and prints the value |
 
 
 ### Operators
@@ -236,9 +236,9 @@ Message format:
 
 | Failure | Exit code |
 |---|---|
-| [lexical error] | 65 |
-| [syntax error] | 65 |
-| [runtime error] | 70 |
+| lexical error | 65 |
+| syntax error | 65 |
+| runtime error | 70 |
 
 
 ## Testing conventions
