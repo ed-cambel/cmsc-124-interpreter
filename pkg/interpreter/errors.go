@@ -19,10 +19,10 @@ func (e RuntimeError) Error() string {
 // evaluates one expression and is the only place that recovers
 func catch(err *error) {
 	if r := recover(); r != nil {
-		re, ok := r.(RuntimeError) // runtime error type
-		if !ok {
-			panic(r) // e.g. the "Unknown statement type." string, re-panic
+		if re, ok := r.(RuntimeError); ok {
+			*err = re
+			return
 		}
-		*err = re
+		*err = fmt.Errorf("Runtime error: internal error: %v", r)
 	}
 }
