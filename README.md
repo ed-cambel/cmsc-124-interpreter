@@ -267,6 +267,8 @@ curl -sSL https://raw.githubusercontent.com/WhiteLicorice/cmsc-124-harness/v1.1/
 python3 run_tests.py tests/lab1
 python3 run_tests.py tests/lab2
 python3 run_tests.py tests/lab3
+python3 run_tests.py tests/lab4
+python3 run_tests.py tests/lab5
 ```
 
 ## Sample code
@@ -292,8 +294,8 @@ approval of your own work.]
 
 ## Known limitations
 
-- The REPL evaluates one expression per statement and prints its value. It doesn't accept `reveal` statements yet.
-- `--parse` and `--eval` only accept expressions terminated by `;`. 
+- The REPL evaluates one expression per statement and prints its value. It doesn't accept `reveal` or `when` statements yet.
+- `--parse` and `--eval` only accept expressions terminated by `;`.
 - [What doesn't work, what is unimplemented, where behavior is worse than you
   would like.]
 
@@ -310,3 +312,4 @@ approval of your own work.]
 | Lab 3 | Edited REPL to now evaluate |
 | Lab 4 | Extended grammar to add reveal statements |
 | Lab 4 | ./run <file> now executes programs |
+| Lab 5    | Extended grammar to add when statements                                                     |
