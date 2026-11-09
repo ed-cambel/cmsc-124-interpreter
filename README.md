@@ -211,8 +211,8 @@ language.]
 
 ### Control flow and functions
 
-- Logical operators return: [booleans, or the operand]
-- Dangling else binds to: [which if]
+- Logical operators return: the deciding operand
+- Dangling else binds to: the nearest `if`
 - Closure capture of a loop variable: [per iteration, or shared]
 - Function with no return statement produces: [value]
 - Arity mismatch: [message and exit code]
