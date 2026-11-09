@@ -52,57 +52,78 @@ func Evaluate(e ast.Expr) any {
 
 		right := Evaluate(n.Right) // every other operator needs both sides
 
+		leftInt, leftIsInt := left.(int)
+		rightInt, rightIsInt := right.(int)
+		bothInt := leftIsInt && rightIsInt
+		leftFloat, isLeftNum := toFloat(left)
+		rightFloat, isRightNum := toFloat(right)
+
 		switch n.Operator.Type {
 		case scanner.PLUS:
-			// checks string concat first
+			leftStringOp, isTrueLeft := left.(string)
+			rightStringOp, isTrueRight := right.(string)
+			
+			// returns concatenated string if both are string 
+			if isTrueLeft && isTrueRight {
+				return  leftStringOp + rightStringOp
+			} 
 
-		
-			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				return left.(int) + x
-			case float64:
-				return left.(float64) + x // TODO: string concatenation
+			if !isLeftNum || !isRightNum {
+				panic(RuntimeError{Token: n.Operator, Message: "Operands must be two numbers or two strings."})
 			}
+
+			// int + int stays int
+			if bothInt {
+				return leftInt + rightInt
+			}
+			// any float involved: both sides as float
+			return leftFloat + rightFloat
+
 		case scanner.MINUS:
 			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				return left.(int) - x
-			case float64:
-				return left.(float64) - x
-			}
+
+			if bothInt {
+				return leftInt - rightInt
+			} 
+
+			return leftFloat - rightFloat
+
 		case scanner.STAR:
 			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				return left.(int) * x
-			case float64:
-				return left.(float64) * x
+		
+			if bothInt {
+				return leftInt * rightInt
 			}
+			return leftFloat * rightFloat
+
 		case scanner.SLASH:
 			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				if x == 0 {	// TODO: implement int division
-					panic("Division by zero.") // TODO: handle this later
-				}
-				return left.(int) / x
-			case float64:
-				if x == 0 {
-					panic("Division by zero.")
-				}
-				return left.(float64) / x
+			if rightFloat == 0 {
+				panic(RuntimeError{Token: n.Operator, Message: "Division by zero."})
 			}
+			return leftFloat / rightFloat // int / int promotes to float
+
+		case scanner.SLASH_SLASH:
+			checkNumberOperands(n.Operator, left, right)
+			if !bothInt {
+				panic(RuntimeError{Token: n.Operator, Message: "Operands must be integers."})
+			}
+			if rightInt == 0 {
+				panic(RuntimeError{Token: n.Operator, Message: "Division by zero."})
+			}
+			return leftInt / rightInt // truncates toward zero
+
 		case scanner.PERCENT:
 			checkNumberOperands(n.Operator, left, right)
-			switch x := right.(type) {
-			case int:
-				if x == 0 {
-					panic("Modulo by zero.") // TODO: handle this later
-				}
-				return left.(int) % x
+			if !bothInt {
+				panic(RuntimeError{Token: n.Operator, Message: "Operands must be integers."})
 			}
+
+			if rightInt == 0 {
+				panic(RuntimeError{Token: n.Operator, Message: "Modulo by zero."})
+			}
+
+			return leftInt % rightInt
 
 		case scanner.LESS, scanner.LESS_EQUAL, scanner.GREATER, scanner.GREATER_EQUAL:
 			checkNumberOperands(n.Operator, left, right)
@@ -116,7 +137,7 @@ func Evaluate(e ast.Expr) any {
 				return leftOp <= rightOp
 			case scanner.GREATER:
 				return leftOp > rightOp
-			default:
+			case scanner.GREATER_EQUAL:
 				return leftOp >= rightOp
 			}
 		case scanner.EQUAL_EQUAL:
