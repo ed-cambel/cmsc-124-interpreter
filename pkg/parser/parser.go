@@ -35,6 +35,33 @@ func (p *Parser) Parse() ast.Tree {
 	return ast.Tree{ASTs: p.exprs}
 }
 
+// ParseProgram returns 1 statement per valid ;-terminated statement, in source order
+func (p *Parser) ParseProgram() []ast.Stmt {
+	var stmts []ast.Stmt
+
+	for !p.isAtEnd() {
+		if stmt := p.parseStatement(); stmt != nil {
+			stmts = append(stmts, stmt)
+		}
+	}
+
+	return stmts
+}
+
+// parses one statement; on a syntax error it recovers and returns nil
+func (p *Parser) parseStatement() (stmt ast.Stmt) {
+	defer p.recoverStatement(&stmt)
+
+	if p.match(scanner.REVEAL) {
+		value := p.expression()
+		p.consume(scanner.SEMICOLON, "Expect ';' after value.")
+		return ast.RevealStmt{Expression: value}
+	}
+	expr := p.expression()
+	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+	return ast.ExprStmt{Expression: expr}
+}
+
 func (p *Parser) expression() ast.Expr {
 	return p.or()
 }
@@ -239,6 +266,17 @@ func (p *Parser) recoverExpression() {
 			panic(r)
 		}
 		p.synchronize()
+	}
+}
+
+// same func but for statemenets, to be improved later on
+func (p *Parser) recoverStatement(stmt *ast.Stmt) {
+	if r := recover(); r != nil {
+		if _, ok := r.(parseAbort); !ok {
+			panic(r)
+		}
+		p.synchronize()
+		*stmt = nil
 	}
 }
 
