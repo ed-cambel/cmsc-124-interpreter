@@ -130,20 +130,25 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-program     → declaration* EOF
-declaration → statement
-statement   → revStmt | exprStmt
-revStmt     → "reveal" expression ";"
-exprStmt    → expression ";"
-expression  → or
-or          → and ( "||" and )*
-and         → equality ( "&&" equality )*
-equality    → comparison ( ( "==" | "!=" ) comparison )*
-comparison  → term ( ( ">" | ">=" | "<" | "<=" ) term )*
-term        → factor ( ( "+" | "-" ) factor )*
-factor      → unary ( ( "*" | "/" | "%" ) unary )*
-unary       → ( "!" | "-" ) unary | primary
-primary     → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
+program 	→ declaration* EOF
+declaration → varDecl | statement
+varDecl    → "bind" IDENTIFIER ( "=" expression )? ";"
+statement  → revStmt | exprStmt | block
+revStmt    → "reveal" expression ";"
+exprStmt   → expression ";"
+block      → "{" declaration* "}"
+
+assignment → IDENTIFIER "->" assignment | or
+expression → assignment
+or         → and ( "||" and )*
+and        → equality ( "&&" equality )*
+equality   → comparison ( ( "==" | "!=" ) comparison )*
+comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term       → factor ( ( "+" | "-" ) factor )*
+factor     → unary ( ( "*" | "/" | "%" ) unary )*
+unary      → ( "!" | "-" ) unary | primary
+primary    → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
+
 ```
 
 ## Parse output format
