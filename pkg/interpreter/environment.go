@@ -13,7 +13,11 @@ func NewEnvironment(enclosing *Environment) *Environment {
 }
 
 // creates a binding in this scope only. it never walks outward
+// redeclaring in the same scope is an error, while an inner scope may reuse the name (shadowing)
 func (e *Environment) Define(name scanner.Token, value any) {
+	if _, ok := e.values[name.Lexeme]; ok {
+		panic(RuntimeError{Token: name, Message: "Variable '" + name.Lexeme + "' is already declared in this scope."})
+	}
 	e.values[name.Lexeme] = value
 }
 
