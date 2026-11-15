@@ -47,3 +47,11 @@ type BlockStmt struct {
 }
 
 func (BlockStmt) stmt() {}
+
+// RitualStmt repeats Body while Condition is truthy; acts like while or for loop
+type RitualStmt struct {
+	Condition Expr
+	Body      Stmt
+}
+
+func (RitualStmt) stmt() {}
