@@ -66,13 +66,54 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 		p.consume(scanner.SEMICOLON, "Expect ';' after value.")
 		return ast.RevealStmt{Expression: value}
 	}
+
+	if p.match(scanner.LEFT_BRACE) {
+		return ast.BlockStmt{Statements: p.block()}
+	}
+
 	expr := p.expression()
 	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
 	return ast.ExprStmt{Expression: expr}
 }
 
+// block parses statements up to the closing brace; the opening brace is already consumed
+// statements that fail to parse recover inside parseStatement and come back nil, so they are skipped
+// loop always terminates since every iteration consumes at least one token (or stops at EOF)
+func (p *Parser) block() []ast.Stmt {
+	var stmts []ast.Stmt
+
+	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
+		if stmt := p.parseStatement(); stmt != nil {
+			stmts = append(stmts, stmt)
+		}
+	}
+
+	p.consume(scanner.RIGHT_BRACE, "Expect '}' after block.")
+	return stmts
+}
+
 func (p *Parser) expression() ast.Expr {
-	return p.or()
+	return p.assignment()
+}
+
+// assignment is right-associative: a -> b -> 3 parses as a -> (b -> 3)
+// the left side is parsed as an ordinary expression first and validated afterwards, since the parser can't tell it is a target until it sees '->'
+func (p *Parser) assignment() ast.Expr {
+	expr := p.or()
+
+	if p.match(scanner.ARROW) {
+		arrow := p.previous()
+		value := p.assignment()
+
+		if variable, ok := expr.(ast.Variable); ok {
+			return ast.Assign{Name: variable.Name, Value: value}
+		}
+
+		// reported but not aborted; the parser isn't confused, only the target is invalid, so no synchronize is needed
+		p.ParseError(arrow, "Invalid assignment target.")
+	}
+
+	return expr
 }
 
 func (p *Parser) ifStatement() ast.Stmt {
@@ -220,6 +261,10 @@ func (p *Parser) primary() ast.Expr {
 		return ast.Literal{
 			Value: p.previous().Literal,
 		}
+	}
+
+	if p.match(scanner.IDENTIFIER) {
+		return ast.Variable{Name: p.previous()}
 	}
 
 	if p.match(scanner.LEFT_PAREN) {

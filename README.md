@@ -76,7 +76,7 @@ Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error 
 | `!` | logical | unary | right | 8 |
 | `&&` | logical | binary | left | 3 |
 | `\|\|` | logical | binary | left | 2 |
-| `->` | assignment | binary | right | TBD |
+| `->` | assignment | binary | right | 1 |
 | `>` | comparison | binary | left | 5 |
 | `<` | comparison | binary | left | 5 |
 | `==` | comparison | binary | left | 4 |
@@ -130,18 +130,19 @@ Token(type=STRING, lexeme="hello", literal=hello, line=1)
 ## Grammar
 
 ```
-program 	 → declaration* EOF
+program 	  → declaration* EOF
 declaration → varDecl | statement
-varDecl    → "bind" IDENTIFIER ( "=" expression )? ";"
-statement  → revStmt | exprStmt | blockStmt | whenStmt
+varDecl     → type IDENTIFIER ( "->" expression )? ";" | "seal" IDENTIFIER "->" expression ";"
+type        → "grain" | "dram" | "scroll" | "rune"
+statement   → revStmt | exprStmt | blockStmt | whenStmt
 whenStmt   → "when" "(" expression ")" statement ( "lest" statement )?
 blockStmt  → "{" statement* "}"
-revStmt    → "reveal" expression ";"
-exprStmt   → expression ";"
-block      → "{" declaration* "}"
+revStmt     → "reveal" expression ";"
+exprStmt    → expression ";"
+block       → "{" declaration* "}"
 
-assignment → IDENTIFIER "->" assignment | or
 expression → assignment
+assignment → IDENTIFIER "->" assignment | or
 or         → and ( "||" and )*
 and        → equality ( "&&" equality )*
 equality   → comparison ( ( "==" | "!=" ) comparison )*
@@ -149,7 +150,7 @@ comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
 term       → factor ( ( "+" | "-" ) factor )*
 factor     → unary ( ( "*" | "/" | "%" ) unary )*
 unary      → ( "!" | "-" ) unary | primary
-primary    → NUMBER | STRING | "boon" | "bane" | "nil" | "(" expression ")"
+primary    → NUMBER | STRING | "boon" | "bane" | "nil" | IDENTIFIER | "(" expression ")"
 
 ```
 

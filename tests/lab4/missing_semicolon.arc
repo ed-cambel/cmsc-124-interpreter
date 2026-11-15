@@ -1,1 +1,1 @@
-reveal 1 /> expect [Line 1] Error at the end: Expect ';' after value. </
+reveal 1 /> expect error: Expect ';' after value. </

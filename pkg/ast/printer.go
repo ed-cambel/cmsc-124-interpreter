@@ -14,10 +14,14 @@ func Print(e Expr) string {
 		return formatLiteral(n.Value)
 	case Grouping:
 		return "(group " + Print(n.Expression) + ")"
-	case Unary:	  
+	case Unary:
 		return "(" + n.Operator.Lexeme + " " + Print(n.Right) + ")"
 	case Binary:
 		return "(" + n.Operator.Lexeme + " " + Print(n.Left) + " " + Print(n.Right) + ")"
+	case Variable:
+		return n.Name.Lexeme
+	case Assign:
+		return "(-> " + n.Name.Lexeme + " " + Print(n.Value) + ")"
 	}
 
 	return "<unknown>"
