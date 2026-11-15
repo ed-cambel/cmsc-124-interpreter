@@ -53,43 +53,23 @@ func (p *Parser) ParseProgram() []ast.Stmt {
 func (p *Parser) parseStatement() (stmt ast.Stmt) {
 	defer p.recoverStatement(&stmt)
 
-	if p.match(scanner.WHEN){
+	if p.match(scanner.WHEN) {
 		return p.ifStatement()
 	}
 
 	if p.match(scanner.LEFT_BRACE) {
 		return p.blockStatement()
 	}
-	
+
 	if p.match(scanner.REVEAL) {
 		value := p.expression()
 		p.consume(scanner.SEMICOLON, "Expect ';' after value.")
 		return ast.RevealStmt{Expression: value}
 	}
 
-	if p.match(scanner.LEFT_BRACE) {
-		return ast.BlockStmt{Statements: p.block()}
-	}
-
 	expr := p.expression()
 	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
 	return ast.ExprStmt{Expression: expr}
-}
-
-// block parses statements up to the closing brace; the opening brace is already consumed
-// statements that fail to parse recover inside parseStatement and come back nil, so they are skipped
-// loop always terminates since every iteration consumes at least one token (or stops at EOF)
-func (p *Parser) block() []ast.Stmt {
-	var stmts []ast.Stmt
-
-	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
-		if stmt := p.parseStatement(); stmt != nil {
-			stmts = append(stmts, stmt)
-		}
-	}
-
-	p.consume(scanner.RIGHT_BRACE, "Expect '}' after block.")
-	return stmts
 }
 
 func (p *Parser) expression() ast.Expr {
@@ -132,10 +112,10 @@ func (p *Parser) ifStatement() ast.Stmt {
 
 func (p *Parser) blockStatement() ast.Stmt {
 	p.depth++
-    defer func() { p.depth-- }()
+	defer func() { p.depth-- }()
 
 	var stmts []ast.Stmt
-	
+
 	// Parse statements until we reach a right brace or the end of the file
 	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
 		if stmt := p.parseStatement(); stmt != nil {
@@ -377,10 +357,10 @@ func (p *Parser) ParseError(token scanner.Token, message string) {
 
 // skips to after the terminator or eof
 func (p *Parser) synchronize() {
-	if p.depth > 0 && p.check(scanner.RIGHT_BRACE){
+	if p.depth > 0 && p.check(scanner.RIGHT_BRACE) {
 		return
 	}
-	
+
 	if !p.isAtEnd() {
 		p.advance()
 	}
@@ -395,7 +375,7 @@ func (p *Parser) synchronize() {
 		case scanner.LEST, scanner.RIGHT_BRACE:
 			if p.depth > 0 {
 				return
-			}	
+			}
 		}
 		p.advance()
 	}
