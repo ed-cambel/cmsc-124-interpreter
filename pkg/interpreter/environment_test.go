@@ -78,3 +78,20 @@ func TestNilBindingIsFound(t *testing.T) {
 		t.Errorf("got %v, want nil", got)
 	}
 }
+
+func TestRedeclareInSameScopeFails(t *testing.T) {
+	env := NewEnvironment(nil)
+	env.Define(tok("x"), 1)
+
+	expectRuntimeError(t, "Variable 'x' is already declared in this scope.", func() { env.Define(tok("x"), 2) })
+	if got := env.Get(tok("x")); got != 1 {
+		t.Errorf("failed redeclaration changed the value: got %v, want 1", got)
+	}
+}
+
+func TestSameNameInInnerScopeIsAllowed(t *testing.T) {
+	outer := NewEnvironment(nil)
+	outer.Define(tok("x"), 1)
+
+	NewEnvironment(outer).Define(tok("x"), 2) // must not panic
+}
