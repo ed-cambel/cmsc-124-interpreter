@@ -134,12 +134,15 @@ program 	  → declaration* EOF
 declaration → varDecl | statement
 varDecl     → type IDENTIFIER ( "->" expression )? ";" | "seal" IDENTIFIER "->" expression ";"
 type        → "grain" | "dram" | "scroll" | "rune"
-statement   → revStmt | exprStmt | blockStmt | whenStmt
-whenStmt   → "when" "(" expression ")" statement ( "lest" statement )?
-blockStmt  → "{" statement* "}"
+statement   → revStmt | exprStmt | blockStmt | whenStmt | ritualStmt
+whenStmt    → "when" "(" expression ")" statement ( "lest" statement )?
+ritualStmt  → "ritual" "(" expression ")" statement 
+            | "ritual" "(" ( varDecl | exprStmt | ";" ) 
+              expression? ";" 
+              expression? ")" statement
+blockStmt   → "{" declaration* "}"
 revStmt     → "reveal" expression ";"
 exprStmt    → expression ";"
-block       → "{" declaration* "}"
 
 expression → assignment
 assignment → IDENTIFIER "->" assignment | or
