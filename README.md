@@ -76,7 +76,7 @@ Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error 
 | `!` | logical | unary | right | 8 |
 | `&&` | logical | binary | left | 3 |
 | `\|\|` | logical | binary | left | 2 |
-| `->` | assignment | binary | right | TBD |
+| `->` | assignment | binary | right | 1 |
 | `>` | comparison | binary | left | 5 |
 | `<` | comparison | binary | left | 5 |
 | `==` | comparison | binary | left | 4 |
