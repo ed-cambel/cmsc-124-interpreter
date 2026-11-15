@@ -1,0 +1,9 @@
+/> and: left if falsey, otherwise right </
+reveal boon && 7;       /> expect: 7 </
+reveal "a" && "b";      /> expect: b </
+reveal boon && bane;    /> expect: bane </
+/> or: left if truthy, otherwise right </
+reveal bane || 7;        /> expect: 7 </
+reveal nil || "default"; /> expect: default </
+reveal bane || nil;      /> expect: nil </
+reveal 0 || 0.0;         /> expect: 0.0 </
