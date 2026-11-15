@@ -57,6 +57,7 @@ const (
 	// Flow control keywords
 	WHEN
 	LEST
+
 	AUGUR
 	SIGN
 	FATE
