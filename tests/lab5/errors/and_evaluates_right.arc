@@ -1,0 +1,1 @@
+boon && (1 / 0);   /> expect runtime error: Division by zero. </
