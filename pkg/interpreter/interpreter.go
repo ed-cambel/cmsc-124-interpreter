@@ -32,6 +32,12 @@ func Execute(s ast.Stmt) (err error) {
 				return err
 			}
 		}
+	case ast.RitualStmt:
+		for isTruthy(Evaluate(n.Condition)) {
+			if err := Execute(n.Body); err != nil {
+				return err
+			}
+		}
 	default:
 		panic("Unknown statement type.")
 	}

@@ -57,6 +57,13 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 		return p.ifStatement()
 	}
 
+	if p.match(scanner.RITUAL) {
+		p.consume(scanner.LEFT_PAREN, "Expect '(' after 'ritual'.")
+		condition := p.expression()
+		p.consume(scanner.RIGHT_PAREN, "Expect ')' after condition.")
+		return ast.RitualStmt{Condition: condition, Body: p.parseStatement()}
+	}
+
 	if p.match(scanner.LEFT_BRACE) {
 		return p.blockStatement()
 	}
@@ -370,7 +377,7 @@ func (p *Parser) synchronize() {
 		}
 
 		switch p.peek().Type {
-		case scanner.REVEAL, scanner.WHEN, scanner.LEFT_BRACE:
+		case scanner.REVEAL, scanner.WHEN, scanner.RITUAL, scanner.LEFT_BRACE:
 			return
 		case scanner.LEST, scanner.RIGHT_BRACE:
 			if p.depth > 0 {
