@@ -182,6 +182,10 @@ func (p *Parser) primary() ast.Expr {
 		}
 	}
 
+	if p.match(scanner.IDENTIFIER) {
+		return ast.Variable{Name: p.previous()}
+	}
+
 	if p.match(scanner.LEFT_PAREN) {
 		expr := p.expression()
 		p.consume(scanner.RIGHT_PAREN, "Expect ')' after expression.")
