@@ -63,7 +63,27 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 }
 
 func (p *Parser) expression() ast.Expr {
-	return p.or()
+	return p.assignment()
+}
+
+// assignment is right-associative: a -> b -> 3 parses as a -> (b -> 3)
+// the left side is parsed as an ordinary expression first and validated afterwards, since the parser can't tell it is a target until it sees '->'
+func (p *Parser) assignment() ast.Expr {
+	expr := p.or()
+
+	if p.match(scanner.ARROW) {
+		arrow := p.previous()
+		value := p.assignment()
+
+		if variable, ok := expr.(ast.Variable); ok {
+			return ast.Assign{Name: variable.Name, Value: value}
+		}
+
+		// reported but not aborted; the parser isn't confused, only the target is invalid, so no synchronize is needed
+		p.ParseError(arrow, "Invalid assignment target.")
+	}
+
+	return expr
 }
 
 func (p *Parser) or() ast.Expr {
