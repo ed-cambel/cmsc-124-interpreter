@@ -1,0 +1,6 @@
+{
+  "ext": ".arc",
+  "mode": "inline",
+  "comment_prefix": "/>",
+  "comment_suffix": "</"
+}

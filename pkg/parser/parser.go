@@ -35,8 +35,110 @@ func (p *Parser) Parse() ast.Tree {
 	return ast.Tree{ASTs: p.exprs}
 }
 
+// ParseProgram returns 1 statement per valid ;-terminated statement, in source order
+func (p *Parser) ParseProgram() []ast.Stmt {
+	var stmts []ast.Stmt
+
+	for !p.isAtEnd() {
+		if stmt := p.parseDeclaration(); stmt != nil {
+			stmts = append(stmts, stmt)
+		}
+	}
+
+	return stmts
+}
+
+// parses one statement; on a syntax error it recovers and returns nil
+func (p *Parser) parseStatement() (stmt ast.Stmt) {
+	defer p.recoverStatement(&stmt)
+
+	if p.match(scanner.REVEAL) {
+		value := p.expression()
+		p.consume(scanner.SEMICOLON, "Expect ';' after value.")
+		return ast.RevealStmt{Expression: value}
+	}
+
+	if p.match(scanner.LEFT_BRACE) {
+		return ast.BlockStmt{Statements: p.block()}
+	}
+
+	expr := p.expression()
+	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
+	return ast.ExprStmt{Expression: expr}
+}
+
+// parses a variable declaration statement, e.g. grain x -> 5; or seal y;
+func (p *Parser) parseDeclaration() (stmt ast.Stmt) {
+	defer p.recoverStatement(&stmt)
+	
+	if p.match(scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.RUNE) {
+		return p.varDeclaration(p.previous(), false)
+	}
+
+	if p.match(scanner.SEAL) {
+		return p.varDeclaration(scanner.Token{}, true)
+	}
+
+	return p.parseStatement()
+}
+
+func (p *Parser) varDeclaration(typeToken scanner.Token, isSeal bool) ast.Stmt {
+	varName := p.consume(scanner.IDENTIFIER, "Expect variable name.")
+
+	var initializer ast.Expr
+	if p.match(scanner.ARROW) {
+		initializer = p.expression()
+	} else if isSeal {
+		p.ParseError(p.peek(), "Expect initializer for constant declaration.")
+	}
+
+	if !p.match(scanner.SEMICOLON) {
+		p.ParseError(p.peek(), "Expect ';' after variable declaration.")
+		panic(parseAbort{})
+	}
+
+	return ast.VarStmt{Name: varName, Type: typeToken, Initializer: initializer, IsSeal: isSeal}
+}
+
+
+// block parses statements up to the closing brace; the opening brace is already consumed
+// statements that fail to parse recover inside parseStatement and come back nil, so they are skipped
+// loop always terminates since every iteration consumes at least one token (or stops at EOF)
+func (p *Parser) block() []ast.Stmt {
+	var stmts []ast.Stmt
+
+	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
+		if stmt := p.parseDeclaration(); stmt != nil {
+			stmts = append(stmts, stmt)
+		}
+	}
+
+	p.consume(scanner.RIGHT_BRACE, "Expect '}' after block.")
+	return stmts
+}
+
 func (p *Parser) expression() ast.Expr {
-	return p.or()
+	return p.assignment()
+}
+
+// assignment is right-associative: a -> b -> 3 parses as a -> (b -> 3)
+// the left side is parsed as an ordinary expression first and validated afterwards, since the parser can't tell it is a target until it sees '->'
+func (p *Parser) assignment() ast.Expr {
+	expr := p.or()
+
+	if p.match(scanner.ARROW) {
+		arrow := p.previous()
+		value := p.assignment()
+
+		if variable, ok := expr.(ast.Variable); ok {
+			return ast.Assign{Name: variable.Name, Value: value}
+		}
+
+		// reported but not aborted; the parser isn't confused, only the target is invalid, so no synchronize is needed
+		p.ParseError(arrow, "Invalid assignment target.")
+	}
+
+	return expr
 }
 
 func (p *Parser) or() ast.Expr {
@@ -155,6 +257,10 @@ func (p *Parser) primary() ast.Expr {
 		}
 	}
 
+	if p.match(scanner.IDENTIFIER) {
+		return ast.Variable{Name: p.previous()}
+	}
+
 	if p.match(scanner.LEFT_PAREN) {
 		expr := p.expression()
 		p.consume(scanner.RIGHT_PAREN, "Expect ')' after expression.")
@@ -242,6 +348,17 @@ func (p *Parser) recoverExpression() {
 	}
 }
 
+// same func but for statemenets, to be improved later on
+func (p *Parser) recoverStatement(stmt *ast.Stmt) {
+	if r := recover(); r != nil {
+		if _, ok := r.(parseAbort); !ok {
+			panic(r)
+		}
+		p.synchronize()
+		*stmt = nil
+	}
+}
+
 // prints error message and sets p.IsError
 func (p *Parser) ParseError(token scanner.Token, message string) {
 	where := " at '" + token.Lexeme + "'"
@@ -261,6 +378,12 @@ func (p *Parser) synchronize() {
 		if p.previous().Type == scanner.SEMICOLON {
 			return
 		}
+
+		switch p.peek().Type {
+		case scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.RUNE, scanner.SEAL, scanner.REVEAL:
+			return
+		}
+
 		p.advance()
 	}
 }
