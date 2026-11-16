@@ -215,10 +215,24 @@ primary    → NUMBER | STRING | "boon" | "bane" | "nil" | IDENTIFIER | "(" expr
 
 ### Scope and bindings
 
-- Redeclaration in the same scope: [allowed or an error]
-- Uninitialized variable holds: [value]
-- Shadowing: [behavior]
-- Undefined name: [static error with exit 65, or runtime error with exit 70]
+- Paradigm: imperative; bindings are mutable except `seal`.
+- Scope: lexical. `{ }` opens a nested scope. Lookup walks outward from the innermost scope and the innermost match wins.
+- Declaration: creates a binding in the current scope only and never searches outward. It is legal at top level and inside blocks.
+  -  `seal` requires an initializer (`seal x;` is a syntax error, exit 65). Its type is inferred and fixed. Reassigning it is a runtime error (exit 70).
+- Assignment: updates the nearest binding and never creates one. It is an expression and yields the assigned value. An invalid target is a syntax error (exit 65).
+- Redeclaration in the same scope: runtime error (exit 70)
+- Uninitialized variable holds: yes (ex. `grain x;` has a value `nil`)
+- Shadowing: an inner declaration hides the outer one without changing it. The outer binding is visible again when the block ends.
+- Initializer: evaluated before the binding is defined, so an inner `grain x -> x;` reads the outer `x`.
+- Undefined name: runtime error (exit 70) on both read and assign.
+- Binding time:
+  - The type is bound at declaration and can’t change. 
+  - The value is bound at initialization and rebound on assignment (except `seal`). 
+  - A name becomes visible after its declaration finishes executing.
+- Storage lifetime:
+  - Globals have static storage (program lifetime). 
+  - Block locals are stack-dynamic: storage begins when the declaration executes and ends when the block exits. 
+  - There is no explicit heap-dynamic storage. The Go map behind the environment doesn’t change what the language promises.
 
 ### Control flow and functions
 
