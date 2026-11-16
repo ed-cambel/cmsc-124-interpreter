@@ -1,0 +1,1 @@
+grain x -> "a";         /> expect runtime error: ype mismatch for variable 'x'. </
