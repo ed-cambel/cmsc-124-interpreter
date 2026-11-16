@@ -10,9 +10,11 @@ func (in *Interpreter) Evaluate(e ast.Expr) any {
 	switch n := e.(type) {
 	case ast.Variable:
 		return in.env.Get(n.Name)
+	case ast.Assign:
+		value := in.Evaluate(n.Value)
+		return in.env.Assign(n.Name, value)
 	case ast.Literal:
 		return n.Value
-
 	case ast.Grouping:
 		return in.Evaluate(n.Expression)
 

@@ -27,7 +27,7 @@ func (e *Environment) Define(name scanner.Token, typ kind, isSeal bool, value an
 	if isSeal {
 		typ = kindOf(value)
 	} else {
-		v, ok := coerceKind(typ, kindOf(value))
+		v, ok := coerceKind(typ, value)
 		if !ok {
 			panic(typeMismatch(name))
 		}
@@ -42,8 +42,8 @@ func (e *Environment) Define(name scanner.Token, typ kind, isSeal bool, value an
 // walks outward until some scope has the name. the innermost match wins
 func (e *Environment) Get(name scanner.Token) any {
 	// the comma-ok form matters: a binding holding nil must still count as found
-	if value, ok := e.values[name.Lexeme]; ok {
-		return value
+	if b, ok := e.values[name.Lexeme]; ok {
+		return b.value
 	}
 	if e.enclosing != nil {
 		return e.enclosing.Get(name)
@@ -56,10 +56,10 @@ func (e *Environment) Get(name scanner.Token) any {
 func (e *Environment) Assign(name scanner.Token, value any) any {
 	if b, ok := e.values[name.Lexeme]; ok {
 		if b.isSeal {
-			panic(RuntimeError{Token:name, Message: "Cannot reassign seal '" + name.Lexeme + "."})
+			panic(RuntimeError{Token:name, Message: "Cannot reassign seal '" + name.Lexeme + "'."})
 		}
 
-		v, ok := coerceKind(b.typ, kindOf(value))
+		v, ok := coerceKind(b.typ, value)
 		if !ok{
 			panic(typeMismatch(name))
 		}
@@ -77,5 +77,5 @@ func undefinedVariable(name scanner.Token) RuntimeError {
 }
 
 func typeMismatch(name scanner.Token) RuntimeError {
-	return RuntimeError{Token: name, Message: "Type mismatch for variable '" + name.Lexeme + "."}
+	return RuntimeError{Token: name, Message: "Type mismatch for variable '" + name.Lexeme + "'."}
 }
