@@ -6,16 +6,18 @@ import (
 )
 
 // Evaluate walks the tree post-order and returns the node's value
-func Evaluate(e ast.Expr) any {
+func (in *Interpreter) Evaluate(e ast.Expr) any {
 	switch n := e.(type) {
+	case ast.Variable:
+		return in.env.Get(n.Name)
 	case ast.Literal:
 		return n.Value
 
 	case ast.Grouping:
-		return Evaluate(n.Expression)
+		return in.Evaluate(n.Expression)
 
 	case ast.Unary:
-		right := Evaluate(n.Right)
+		right := in.Evaluate(n.Right)
 
 		switch n.Operator.Type {
 		case scanner.MINUS:
@@ -34,7 +36,7 @@ func Evaluate(e ast.Expr) any {
 		panic("Unknown unary operator: " + n.Operator.Lexeme)
 
 	case ast.Binary:
-		left := Evaluate(n.Left)
+		left := in.Evaluate(n.Left)
 
 		// && and || check since it decides from left value before touchign the right
 		switch n.Operator.Type {
@@ -42,15 +44,15 @@ func Evaluate(e ast.Expr) any {
 			if isTruthy(left) {
 				return left
 			}
-			return Evaluate(n.Right)
+			return in.Evaluate(n.Right)
 		case scanner.AND:
 			if !isTruthy(left) {
 				return left
 			}
-			return Evaluate(n.Right)
+			return in.Evaluate(n.Right)
 		}
 
-		right := Evaluate(n.Right) // every other operator needs both sides
+		right := in.Evaluate(n.Right) // every other operator needs both sides
 
 		leftInt, leftIsInt := left.(int)
 		rightInt, rightIsInt := right.(int)

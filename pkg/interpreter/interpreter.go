@@ -16,7 +16,7 @@ func New() *Interpreter {
 // evaluates one expression, used by --eval and the REPL
 func (in *Interpreter) Interpret(e ast.Expr) (value any, err error) {
 	defer catch(&err)
-	return Evaluate(e), nil
+	return in.Evaluate(e), nil
 }
 
 // runs one statement, used by plain ./run
@@ -25,9 +25,9 @@ func (in *Interpreter)Execute(s ast.Stmt) (err error) {
 
 	switch n := s.(type) {
 	case ast.ExprStmt:
-		Evaluate(n.Expression) // value is discarded
+		in.Evaluate(n.Expression) // value is discarded
 	case ast.RevealStmt:
-		fmt.Println(Stringify(Evaluate(n.Expression)))
+		fmt.Println(Stringify(in.Evaluate(n.Expression)))
 	default:
 		panic("Unknown statement type.")
 	}
