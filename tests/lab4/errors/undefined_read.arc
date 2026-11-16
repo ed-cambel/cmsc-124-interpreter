@@ -1,0 +1,1 @@
+reveal x;       /> expect runtime error: Undefined variable 'x'.</
