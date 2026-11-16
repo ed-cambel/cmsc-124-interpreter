@@ -1,0 +1,1 @@
+seal x; /> expect error: Expect initializer for constant declaration. </

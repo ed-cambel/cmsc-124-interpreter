@@ -27,6 +27,18 @@ func printTokens(tokens []scanner.Token) {
 	}
 }
 
+func executeREPL(in *interpreter.Interpreter, stmt ast.Stmt) error {
+	if es, ok := stmt.(ast.ExprStmt); ok {
+		value, err := in.Interpret(es.Expression)
+		if err != nil {
+			return err
+		}
+		fmt.Println(interpreter.Stringify(value))
+		return nil
+	}
+	return in.Execute(stmt)
+}
+
 func runREPL() {
 	reader := bufio.NewScanner(os.Stdin)
 	in := interpreter.New()
@@ -53,25 +65,18 @@ func runREPL() {
 		}
 
 		p := parser.NewParser(tokens)
-		tree := p.Parse() // p.Parse() returns a Tree whose children are ASTs
+		program := p.ParseProgram() //
 
 		if p.IsError {
 			continue // parser already printed its error
 		}
 
-		for _, node := range tree.ASTs {
-			value, err := in.Interpret(node)
-			if err != nil {
+		for _, stmt := range program {
+			if err := executeREPL(in, stmt); err != nil {
 				fmt.Fprintln(os.Stderr, err)
-				break // stop this line; a runtime error ends the rest of the line, as in file mode
+				break // a runtime error ends the rest of the line; the session's variable survives
 			}
-			fmt.Println(interpreter.Stringify(value))
 		}
-	}
-
-	// check for input errors after the REPL loop ends
-	if err := reader.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "error reading input: %v\n", err)
 	}
 }
 
@@ -203,7 +208,7 @@ func main() {
 		os.Exit(65) // nothing executes if any statement failed to parse
 	}
 
-	in := interpreter.New()
+	in := interpreter.New() // state persists
 	for _, stmt := range program {
 		if err := in.Execute(stmt); err != nil {
 			fmt.Fprintln(os.Stderr, err)
