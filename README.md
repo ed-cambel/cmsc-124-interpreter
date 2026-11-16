@@ -257,7 +257,7 @@ Message format:
 ```
 [Line 2] Error: Unexpected character '#'
 [Line 1] Error at ';': Expect expression.
-[one real runtime error]
+[Line 1] Runtime error: Undefined variable 'y'
 ```
 
 
@@ -299,13 +299,36 @@ python3 run_tests.py tests/lab4
 ## Sample code
 
 ```
-[a short program]
+/> A witch brews a potion. Her mana is borrowed inside the spell block. </
+seal cauldron -> "Moonbrew";
+grain mana -> 10;
+dram potency -> 1.5;
+
+reveal cauldron;
+reveal mana;
+
+{
+  /> a new mana that only exists inside this block </
+  grain mana -> 3;
+  reveal mana;
+
+  /> no new variable here, so this changes the outer potency </
+  potency -> potency * 2;
+}
+
+/> the block is over: the outer mana is back, and potency stayed changed </
+reveal mana;
+reveal potency;
 ```
 
 Output:
 
 ```
-[its output]
+Moonbrew
+10
+3
+10
+3.0
 ```
 
 ## Design rationale
@@ -330,7 +353,6 @@ approval of your own work.]
 
 ## Changelog
 
-
 | Activity | What changed in the language |
 |---|---|
 | Lab 1 | Established token output format (`TYPE LEXEME LITERAL LINE`) |
@@ -341,3 +363,8 @@ approval of your own work.]
 | Lab 3 | Edited REPL to now evaluate |
 | Lab 4 | Extended grammar to add reveal statements |
 | Lab 4 | ./run <file> now executes programs |
+| Lab 4 | Added `{ }` blocks with lexical scope and shadowing |
+| Lab 4 | Added identifiers as expressions |
+| Lab 4 | Added runtime errors for undefined names, redeclaration, type mismatch, and `seal` reassignment |
+| Lab 4 | Added `grain` to `dram` promotion on assignment; any other type mismatch is a runtime error |
+| Lab 4 | Edited REPL to now execute statements, keeps variables across lines, and prints bare expression values |
