@@ -108,7 +108,7 @@ func (p *Parser) block() []ast.Stmt {
 	var stmts []ast.Stmt
 
 	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
-		if stmt := p.parseStatement(); stmt != nil {
+		if stmt := p.parseDeclaration(); stmt != nil {
 			stmts = append(stmts, stmt)
 		}
 	}
@@ -383,7 +383,7 @@ func (p *Parser) synchronize() {
 		case scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.RUNE, scanner.SEAL, scanner.REVEAL:
 			return
 		}
-		
+
 		p.advance()
 	}
 }
