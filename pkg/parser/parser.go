@@ -378,6 +378,12 @@ func (p *Parser) synchronize() {
 		if p.previous().Type == scanner.SEMICOLON {
 			return
 		}
+
+		switch p.peek().Type {
+		case scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.RUNE, scanner.SEAL, scanner.REVEAL:
+			return
+		}
+		
 		p.advance()
 	}
 }
