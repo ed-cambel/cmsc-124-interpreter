@@ -1,1 +1,0 @@
-grain x -> 1            /> expect error: Expect ';' after variable declaration </
