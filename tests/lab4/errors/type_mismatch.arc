@@ -1,1 +1,1 @@
-grain x -> "a";         /> expect runtime error: ype mismatch for variable 'x'. </
+grain x -> "a";         /> expect runtime error: Type mismatch for variable 'x'. </
