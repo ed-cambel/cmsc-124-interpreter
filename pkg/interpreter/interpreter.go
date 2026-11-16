@@ -5,14 +5,22 @@ import (
 	"fmt"
 )
 
+type Interpreter struct {
+	env *Environment
+}
+
+func New() *Interpreter {
+	return &Interpreter{env: NewEnvironment(nil)}
+}
+
 // evaluates one expression, used by --eval and the REPL
-func Interpret(e ast.Expr) (value any, err error) {
+func (in *Interpreter) Interpret(e ast.Expr) (value any, err error) {
 	defer catch(&err)
 	return Evaluate(e), nil
 }
 
 // runs one statement, used by plain ./run
-func Execute(s ast.Stmt) (err error) {
+func (in *Interpreter)Execute(s ast.Stmt) (err error) {
 	defer catch(&err)
 
 	switch n := s.(type) {

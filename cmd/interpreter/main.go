@@ -29,6 +29,7 @@ func printTokens(tokens []scanner.Token) {
 
 func runREPL() {
 	reader := bufio.NewScanner(os.Stdin)
+	in := interpreter.New()
 
 	for {
 		fmt.Print("> ")
@@ -59,7 +60,7 @@ func runREPL() {
 		}
 
 		for _, node := range tree.ASTs {
-			value, err := interpreter.Interpret(node)
+			value, err := in.Interpret(node)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				break // stop this line; a runtime error ends the rest of the line, as in file mode
@@ -163,9 +164,10 @@ func main() {
 			os.Exit(65)
 		}
 
+		in := interpreter.New()
 		hasRuntimeError := false
 		for _, node := range tree.ASTs {
-			value, err := interpreter.Interpret(node)
+			value, err := in.Interpret(node)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				hasRuntimeError = true
@@ -201,8 +203,9 @@ func main() {
 		os.Exit(65) // nothing executes if any statement failed to parse
 	}
 
+	in := interpreter.New()
 	for _, stmt := range program {
-		if err := interpreter.Execute(stmt); err != nil {
+		if err := in.Execute(stmt); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(70)
 		}
