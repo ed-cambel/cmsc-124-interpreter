@@ -27,16 +27,21 @@ func printTokens(tokens []scanner.Token) {
 	}
 }
 
+// runs one REPL statement; a bare expression statement prints its value, everything else executes as in file mode
+// only the REPL does this, so file mode still prints only reveal
 func executeREPL(in *interpreter.Interpreter, stmt ast.Stmt) error {
-	if es, ok := stmt.(ast.ExprStmt); ok {
-		value, err := in.Interpret(es.Expression)
-		if err != nil {
-			return err
-		}
-		fmt.Println(interpreter.Stringify(value))
-		return nil
+	es, ok := stmt.(ast.ExprStmt)
+	if !ok {
+		return in.Execute(stmt)
 	}
-	return in.Execute(stmt)
+
+	value, err := in.Interpret(es.Expression)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(interpreter.Stringify(value))
+	return nil
 }
 
 func runREPL() {
