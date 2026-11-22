@@ -112,22 +112,6 @@ func (p *Parser) varDeclaration(typeToken scanner.Token, isSeal bool) ast.Stmt {
 	return ast.VarStmt{Name: varName, Type: typeToken, Initializer: initializer, IsSeal: isSeal}
 }
 
-// block parses statements up to the closing brace; the opening brace is already consumed
-// statements that fail to parse recover inside parseDeclaration and come back nil, so they are skipped
-// loop always terminates since every iteration consumes at least one token (or stops at EOF)
-func (p *Parser) block() []ast.Stmt {
-	var stmts []ast.Stmt
-
-	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
-		if stmt := p.parseDeclaration(); stmt != nil {
-			stmts = append(stmts, stmt)
-		}
-	}
-
-	p.consume(scanner.RIGHT_BRACE, "Expect '}' after block.")
-	return stmts
-}
-
 func (p *Parser) expression() ast.Expr {
 	return p.assignment()
 }
