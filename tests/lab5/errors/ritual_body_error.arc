@@ -1,0 +1,1 @@
+ritual (boon) reveal nope; /> expect runtime error: Undefined variable 'nope'. </
