@@ -1,0 +1,1 @@
+grain x -> "a";         /> expect runtime error: Type mismatch for variable 'x'. </
