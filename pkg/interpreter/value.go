@@ -74,11 +74,12 @@ func isEqual(a, b any) bool {
 		}
 	}
 
-	if af, ok := toFloat(a); ok {
-		bf, ok := toFloat(b)
-		return ok && af == bf // makes 5 == 5.0 true since it converts 5 to 5.0; a number vs a non-number is false
+	af, ok := toFloat(a)
+	if !ok {
+		return a == b // for non-numbers (nil, bool, string) compares by type and value, not by reference
 	}
-	return a == b // for non-numbers (nil, bool, string) compares by type and value, not by reference
+	bf, ok := toFloat(b)
+	return ok && af == bf // makes 5 == 5.0 true since it converts 5 to 5.0; a number vs a non-number is false
 }
 
 // for unary function

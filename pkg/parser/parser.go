@@ -82,7 +82,7 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 // parses a variable declaration statement, e.g. grain x -> 5; or seal y;
 func (p *Parser) parseDeclaration() (stmt ast.Stmt) {
 	defer p.recoverStatement(&stmt)
-	
+
 	if p.match(scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.RUNE) {
 		return p.varDeclaration(p.previous(), false)
 	}
@@ -112,9 +112,8 @@ func (p *Parser) varDeclaration(typeToken scanner.Token, isSeal bool) ast.Stmt {
 	return ast.VarStmt{Name: varName, Type: typeToken, Initializer: initializer, IsSeal: isSeal}
 }
 
-
 // block parses statements up to the closing brace; the opening brace is already consumed
-// statements that fail to parse recover inside parseStatement and come back nil, so they are skipped
+// statements that fail to parse recover inside parseDeclaration and come back nil, so they are skipped
 // loop always terminates since every iteration consumes at least one token (or stops at EOF)
 func (p *Parser) block() []ast.Stmt {
 	var stmts []ast.Stmt

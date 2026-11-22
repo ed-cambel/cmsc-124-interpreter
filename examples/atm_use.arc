@@ -1,11 +1,11 @@
 /> Example: ATM Use </
 
 seal withdrawalFee -> 18;
-scroll cardHolder -> "Long Anisa"
+scroll cardHolder -> "Long Anisa";
 grain balance -> 1000;
 grain counter -> 0;
 
-reveal holder;
+reveal cardHolder;
 reveal balance;
 
 /> deposit </
