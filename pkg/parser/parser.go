@@ -172,9 +172,9 @@ func (p *Parser) blockStatement() ast.Stmt {
 
 	var stmts []ast.Stmt
 
-	// Parse statements until we reach a right brace or the end of the file
+	// Parse declarations and statements until we reach a right brace or the end of the file
 	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
-		if stmt := p.parseStatement(); stmt != nil {
+		if stmt := p.parseDeclaration(); stmt != nil {
 			stmts = append(stmts, stmt)
 		}
 	}
