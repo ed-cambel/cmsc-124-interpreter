@@ -41,6 +41,12 @@ func (in *Interpreter) exec(s ast.Stmt) {
 		}
 	case ast.SpellStmt:
 		in.env.Define(n.Name, kindSpell, true, &Spell{decl: &n, closure: in.env})
+	case ast.YieldStmt:
+		var value any
+		if n.Value != nil {
+			value = in.Evaluate(n.Value)
+		}
+		panic(YieldSignal{Value: value})
 	case ast.VarStmt:
 		var value any
 		if n.Initializer != nil {
