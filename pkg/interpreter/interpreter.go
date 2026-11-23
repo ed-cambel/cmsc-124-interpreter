@@ -11,6 +11,7 @@ type Interpreter struct {
 
 func New() *Interpreter {
 	return &Interpreter{env: NewEnvironment(nil)}
+
 }
 
 // evaluates one expression, used by --eval and the REPL
@@ -38,6 +39,8 @@ func (in *Interpreter) exec(s ast.Stmt) {
 		} else if n.Else != nil {
 			in.exec(n.Else)
 		}
+	case ast.SpellStmt:
+		in.env.Define(n.Name, kindSpell, true, &Spell{decl: &n, closure: in.env})
 	case ast.VarStmt:
 		var value any
 		if n.Initializer != nil {

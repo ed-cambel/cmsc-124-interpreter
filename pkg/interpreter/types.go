@@ -12,6 +12,7 @@ const (
 	kindDram
 	kindScroll
 	kindOther
+	kindSpell
 )
 
 // maps a declaration's type keyword to the kind its variable is checked against
@@ -37,6 +38,8 @@ func kindOf(v any) kind {
 		return kindDram
 	case string:
 		return kindScroll	
+	case Callable:
+		return kindSpell
 	}
 	return kindOther
 }
