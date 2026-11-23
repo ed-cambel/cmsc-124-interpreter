@@ -55,3 +55,16 @@ type RitualStmt struct {
 }
 
 func (RitualStmt) stmt() {}
+
+type SpellStmt struct {
+	Name   scanner.Token
+	Params []Param
+	Body   []Stmt
+}
+
+func (SpellStmt) stmt() {}
+
+type Param struct {
+	Name scanner.Token
+	Type scanner.Token
+}
