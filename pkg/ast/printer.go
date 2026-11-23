@@ -22,6 +22,12 @@ func Print(e Expr) string {
 		return n.Name.Lexeme
 	case Assign:
 		return "(-> " + n.Name.Lexeme + " " + Print(n.Value) + ")"
+	case CallExpr:
+		s := "(call " + Print(n.Callee)
+		for _, arg := range n.Args {
+			s += " " + Print(arg)
+		}
+		return s + ")"
 	}
 
 	return "<unknown>"
