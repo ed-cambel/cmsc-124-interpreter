@@ -182,7 +182,7 @@ func (p *Parser) yieldStatement() ast.Stmt {
 	}
 
 	p.consume(scanner.SEMICOLON, "Expect ';' after return value.")
-	return ast.ReturnStmt{Keyword: keyword, Value: value}
+	return ast.YieldStmt{Keyword: keyword, Value: value}
 }
 
 // block parses statements up to the closing brace; the opening brace is already consumed
