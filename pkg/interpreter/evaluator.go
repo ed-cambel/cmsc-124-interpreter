@@ -3,6 +3,7 @@ package interpreter
 import (
 	"arkana/pkg/ast"
 	"arkana/pkg/scanner"
+	"fmt"
 )
 
 // Evaluate walks the tree post-order and returns the node's value
@@ -17,7 +18,26 @@ func (in *Interpreter) Evaluate(e ast.Expr) any {
 		return n.Value
 	case ast.Grouping:
 		return in.Evaluate(n.Expression)
+	case ast.CallExpr:
+		callee := in.Evaluate(n.Callee)
 
+		args := make([]any, 0, len(n.Args))
+		for _, arg := range n.Args {
+			args = append(args, in.Evaluate(arg)) // left to right, in the caller's environment
+		}
+
+		fn, isCallable := callee.(Callable)
+		if !isCallable {
+			panic(RuntimeError{Token: n.Paren, Message: "Can only call functions."})
+		}
+
+		if len(args) != fn.Arity() {
+			panic(RuntimeError{
+				Token:   n.Paren,
+				Message: fmt.Sprintf("Expected %d arguments but got %d.", fn.Arity(), len(args)),
+			})
+		}
+		return fn.Call(in, args)
 	case ast.Unary:
 		right := in.Evaluate(n.Right)
 
