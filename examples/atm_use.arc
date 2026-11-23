@@ -1,29 +1,20 @@
-/> Example: ATM Use </
+/> A witch brews a potion. Her mana is borrowed inside the spell block. </
+seal cauldron -> "Moonbrew";
+grain mana -> 10;
+dram potency -> 1.5;
 
-seal withdrawalFee -> 18;
-scroll cardHolder -> "Long Anisa"
-grain balance -> 1000;
-grain counter -> 0;
+reveal cauldron;
+reveal mana;
 
-reveal holder;
-reveal balance;
-
-/> deposit </
 {
-	grain amount-> 500;
-	balance -> balance + amount;
-	counter -> counter + 1;
-	reveal balance;
+  /> a new mana that only exists inside this block </
+  grain mana -> 3;
+  reveal mana;
+
+  /> no new variable here, so this changes the outer potency </
+  potency -> potency * 2;
 }
 
-/> withdrawal </
-{
-	grain amount -> 500;
-	grain charged -> amount + withdrawalFee;
-	balance -> balance - charged;
-	counter -> counter + 1;
-	reveal charged;
-}
-
-reveal balance;
-reveal counter;
+/> the block is over: the outer mana is back, and potency stayed changed </
+reveal mana;
+reveal potency;
