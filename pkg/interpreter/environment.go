@@ -3,10 +3,11 @@ package interpreter
 import "arkana/pkg/scanner"
 
 type binding struct {
-	value 	any
-	typ   	kind
-	isSeal	bool
+	value  any
+	typ    kind
+	isSeal bool
 }
+
 // Environment holds the bindings of one scope and a link to the scope enclosing it
 type Environment struct {
 	values    map[string]*binding
@@ -20,10 +21,10 @@ func NewEnvironment(enclosing *Environment) *Environment {
 // creates a binding in this scope only. it never walks outward
 // redeclaring in the same scope is an error, while an inner scope may reuse the name (shadowing)
 func (e *Environment) Define(name scanner.Token, typ kind, isSeal bool, value any) {
-	if _, ok := e.values[name.Lexeme]; ok {
+	if _, declared := e.values[name.Lexeme]; declared {
 		panic(RuntimeError{Token: name, Message: "Variable '" + name.Lexeme + "' is already declared in this scope."})
 	}
-	
+
 	if isSeal {
 		typ = kindOf(value)
 	} else {
@@ -38,38 +39,41 @@ func (e *Environment) Define(name scanner.Token, typ kind, isSeal bool, value an
 	e.values[name.Lexeme] = &binding{value: value, typ: typ, isSeal: isSeal}
 }
 
-
 // walks outward until some scope has the name. the innermost match wins
 func (e *Environment) Get(name scanner.Token) any {
 	// the comma-ok form matters: a binding holding nil must still count as found
-	if b, ok := e.values[name.Lexeme]; ok {
-		return b.value
+	b, ok := e.values[name.Lexeme]
+	if !ok {
+		if e.enclosing == nil {
+			panic(undefinedVariable(name))
+		}
+		return e.enclosing.Get(name) // not in this scope, keep walking outward
 	}
-	if e.enclosing != nil {
-		return e.enclosing.Get(name)
-	}
-	panic(undefinedVariable(name))
+	return b.value
 }
 
 // updates an existing binding, searching outward. it never creates one
 // returns the assigned value, since assignment is an expression
 func (e *Environment) Assign(name scanner.Token, value any) any {
-	if b, ok := e.values[name.Lexeme]; ok {
-		if b.isSeal {
-			panic(RuntimeError{Token:name, Message: "Cannot reassign seal '" + name.Lexeme + "'."})
+	b, ok := e.values[name.Lexeme]
+	if !ok {
+		if e.enclosing == nil {
+			panic(undefinedVariable(name))
 		}
+		return e.enclosing.Assign(name, value) // not in this scope, keep walking outward
+	}
 
-		v, ok := coerceKind(b.typ, value)
-		if !ok{
-			panic(typeMismatch(name))
-		}
-		b.value = v
-		return v
+	if b.isSeal {
+		panic(RuntimeError{Token: name, Message: "Cannot reassign seal '" + name.Lexeme + "'."})
 	}
-	if e.enclosing != nil {
-		return e.enclosing.Assign(name, value)
+
+	v, ok := coerceKind(b.typ, value)
+	if !ok {
+		panic(typeMismatch(name))
 	}
-	panic(undefinedVariable(name))
+
+	b.value = v
+	return v
 }
 
 func undefinedVariable(name scanner.Token) RuntimeError {

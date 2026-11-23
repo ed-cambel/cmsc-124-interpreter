@@ -49,6 +49,10 @@ func (in *Interpreter) exec(s ast.Stmt) {
 		in.env.Define(n.Name, declaredKind(n.Type.Type), n.IsSeal, value)
 	case ast.BlockStmt:
 		in.executeBlock(n.Statements, NewEnvironment(in.env))
+	case ast.RitualStmt:
+		for isTruthy(in.Evaluate(n.Condition)) {
+			in.exec(n.Body)
+		}
 	default:
 		panic("Unknown statement type.")
 	}

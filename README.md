@@ -48,12 +48,12 @@ Exit codes: 0 when program runs successfully, 65 when a lexical or syntax error 
 | `bane`   | Boolean value `false`                                                                    |
 | `nil`    | No-value literal                                                                         |
 | `seal`   | Constant declaration                                                                     |
-| `when`   | Runs specific block of code if the condition evaluates to `boon`.                        |
-| `lest`   | Runs alternative block of code if the condition evaluates to `bane` or encounters `nil`. |
+| `when`   | Runs a statement if the condition is truthy                                              |
+| `lest`   | Runs the alternative statement of a `when` when its condition is falsey                  |
 | `augur`  | Evaluates target variable or expression for matching                                     |
 | `sign`   | Defines literal value to match against target variable                                   |
 | `fate`   | Fallback block when no cases match                                                       |
-| `ritual` | Declares and initializes loop until condition becomes `bane`                             |
+| `ritual` | Repeats a statement while its condition is truthy (while form for now)                   |
 | `skip`   | Skips to the next iteration of loop                                                      |
 | `dispel` | Terminates loop                                                                          |
 | `reveal` | Evaluates an expression and prints the value                                             |
@@ -190,7 +190,7 @@ primary    → NUMBER | STRING | "boon" | "bane" | "nil" | IDENTIFIER | "(" expr
 
 - Only `bane`, `nil`, and the number `0` are false. Everything else is true, including `""`.
 - `!` applies to any type: `!nil` is `boon`, `!bane` is `boon`, `!boon` is `bane`, `!0` is `boon`.
-- `and` / `or` short-circuit and return the deciding operand.
+- `&&` / `||` short-circuit and return the deciding operand.
 
 ### Operator semantics
 
@@ -232,8 +232,9 @@ primary    → NUMBER | STRING | "boon" | "bane" | "nil" | IDENTIFIER | "(" expr
 
 ### Control flow and functions
 
-- Logical operators return: the deciding operand
-- Dangling else binds to: the nearest `if`
+- Conditionals: `when (cond) stmt` runs `stmt` if `cond` is truthy; `lest` supplies the alternative. No `lest` means nothing runs when falsey. `lest when (...)` chains as else-if.
+- Logical operators return: the deciding operand. `&&` returns the left if falsey, else the right. `||` returns the left if truthy, else the right. The right side runs only when needed.
+- Dangling else binds to: the nearest `when`
 - Closure capture of a loop variable: [per iteration, or shared]
 - Function with no return statement produces: [value]
 - Arity mismatch: [message and exit code]
@@ -336,10 +337,12 @@ approval of your own work.]
 
 ## Known limitations
 
-- The REPL evaluates one expression per statement and prints its value. It doesn't accept `reveal` or `when` statements yet.
+- The REPL parses one line at a time, so a block, `when`, or `ritual` statement must fit on one line.
 - `--parse` and `--eval` only accept expressions terminated by `;`.
 - `boon/bane` values cannot be stored in variables, since there is no bool type keyword yet.
 - `rune` variables can only hold `nil`, since there is no `rune` literal yet.
+- The for form of `ritual` is not implemented; only `ritual (condition) statement` works.
+- `skip`, `dispel`, `augur`, `sign`, and `fate` are reserved but not implemented yet.
 - [What doesn't work, what is unimplemented, where behavior is worse than you
   would like.]
 
@@ -361,3 +364,4 @@ approval of your own work.]
 | Lab 4    | Added `grain` to `dram` promotion on assignment; any other type mismatch is a runtime error            |
 | Lab 4    | Edited REPL to now execute statements, keeps variables across lines, and prints bare expression values |
 | Lab 5    | Extended grammar to add when statements                                                                |
+| Lab 5    | Added `ritual` while loop: `ritual (condition) statement`                                              |

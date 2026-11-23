@@ -3,9 +3,15 @@ seal cauldron -> "Moonbrew";
 grain mana -> 10;
 dram potency -> 1.5;
 
-reveal cauldron;
-reveal mana;
+seal withdrawalFee -> 18;
+scroll cardHolder -> "Long Anisa";
+grain balance -> 1000;
+grain counter -> 0;
 
+reveal cardHolder;
+reveal balance;
+
+/> deposit </
 {
   /> a new mana that only exists inside this block </
   grain mana -> 3;

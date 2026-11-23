@@ -57,6 +57,13 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 		return p.ifStatement()
 	}
 
+	if p.match(scanner.RITUAL) {
+		p.consume(scanner.LEFT_PAREN, "Expect '(' after 'ritual'.")
+		condition := p.expression()
+		p.consume(scanner.RIGHT_PAREN, "Expect ')' after condition.")
+		return ast.RitualStmt{Condition: condition, Body: p.parseStatement()}
+	}
+
 	if p.match(scanner.LEFT_BRACE) {
 		return p.blockStatement()
 	}
@@ -79,7 +86,7 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 // parses a variable declaration statement, e.g. grain x -> 5; or seal y;
 func (p *Parser) parseDeclaration() (stmt ast.Stmt) {
 	defer p.recoverStatement(&stmt)
-	
+
 	if p.match(scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.RUNE) {
 		return p.varDeclaration(p.previous(), false)
 	}
@@ -213,9 +220,9 @@ func (p *Parser) blockStatement() ast.Stmt {
 
 	var stmts []ast.Stmt
 
-	// Parse statements until we reach a right brace or the end of the file
+	// Parse declarations and statements until we reach a right brace or the end of the file
 	for !p.check(scanner.RIGHT_BRACE) && !p.isAtEnd() {
-		if stmt := p.parseStatement(); stmt != nil {
+		if stmt := p.parseDeclaration(); stmt != nil {
 			stmts = append(stmts, stmt)
 		}
 	}
@@ -467,7 +474,7 @@ func (p *Parser) synchronize() {
 		}
 
 		switch p.peek().Type {
-		case scanner.REVEAL, scanner.WHEN, scanner.LEFT_BRACE:
+		case scanner.REVEAL, scanner.WHEN, scanner.RITUAL, scanner.LEFT_BRACE:
 			return
 		case scanner.LEST, scanner.RIGHT_BRACE:
 			if p.depth > 0 {
