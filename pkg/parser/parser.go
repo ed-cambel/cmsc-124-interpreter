@@ -67,6 +67,10 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 		return ast.RevealStmt{Expression: value}
 	}
 
+	if p.match(scanner.SPELL) {
+		return p.function()
+	}
+
 	expr := p.expression()
 	p.consume(scanner.SEMICOLON, "Expect ';' after expression.")
 	return ast.ExprStmt{Expression: expr}
@@ -105,6 +109,49 @@ func (p *Parser) varDeclaration(typeToken scanner.Token, isSeal bool) ast.Stmt {
 	return ast.VarStmt{Name: varName, Type: typeToken, Initializer: initializer, IsSeal: isSeal}
 }
 
+func (p *Parser) function() ast.Stmt {
+	name := p.consume(scanner.IDENTIFIER, "Expect function name.")
+	p.consume(scanner.LEFT_PAREN, "Expect '(' after function name.")
+
+	var params []ast.Param
+	if !p.check(scanner.RIGHT_PAREN) {
+		for {
+			if !p.match(scanner.GRAIN, scanner.DRAM, scanner.SCROLL) {
+				p.ParseError(p.peek(), "Expect parameter type.")
+				panic(parseAbort{})
+			}
+			typ := p.previous()
+			pname := p.consume(scanner.IDENTIFIER, "Expect parameter name.")
+			params = append(params, ast.Param{Name: pname, Type: typ})
+
+			if !p.match(scanner.COMMA) {
+				break
+			}
+		}
+	}
+	p.consume(scanner.RIGHT_PAREN, "Expect ')' after parameters.")
+	p.consume(scanner.LEFT_BRACE, "Expect '{' before function body.")
+
+	return ast.SpellStmt{Name: name, Params: params, Body: p.block()}
+}
+
+func (p *Parser) call() ast.Expr {
+	expr := p.primary()
+	for p.match(scanner.LEFT_PAREN) {
+		var args []ast.Expr
+		if !p.check(scanner.RIGHT_PAREN) {
+			for {
+				args = append(args, p.expression())
+				if !p.match(scanner.COMMA) {
+					break
+				}
+			}
+		}
+		paren := p.consume(scanner.RIGHT_PAREN, "Expect ')' after arguments.")
+		expr = ast.CallExpr{Callee: expr, Paren: paren, Args: args}
+	}
+	return expr
+}
 
 // block parses statements up to the closing brace; the opening brace is already consumed
 // statements that fail to parse recover inside parseStatement and come back nil, so they are skipped
@@ -282,7 +329,7 @@ func (p *Parser) unary() ast.Expr {
 		}
 	}
 
-	return p.primary()
+	return p.call()
 }
 
 func (p *Parser) primary() ast.Expr {
