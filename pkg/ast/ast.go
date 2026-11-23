@@ -59,3 +59,11 @@ func (Assign) expr() {}
 type Tree struct {
 	ASTs []Expr // the root's children, one AST per valid statement
 }
+
+type CallExpr struct {
+	Callee Expr
+	Paren  scanner.Token // closing ')', used for error line numbers
+	Args   []Expr
+}
+
+func (CallExpr) expr() {}
