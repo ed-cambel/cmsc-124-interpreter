@@ -24,6 +24,8 @@ func declaredKind(t scanner.TokenType) kind {
 		return kindDram
 	case scanner.SCROLL:
 		return kindScroll
+	case scanner.SPELL:
+		return kindSpell
 	}
 	return kindNil // seal: Define ignores this and infers the type from the value
 }
@@ -37,13 +39,12 @@ func kindOf(v any) kind {
 	case float64:
 		return kindDram
 	case string:
-		return kindScroll	
+		return kindScroll
 	case Callable:
 		return kindSpell
 	}
 	return kindOther
 }
-
 
 func coerceKind(declared kind, v any) (any, bool) {
 	kind := kindOf(v)

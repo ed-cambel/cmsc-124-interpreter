@@ -123,7 +123,7 @@ func (p *Parser) function() ast.Stmt {
 	var params []ast.Param
 	if !p.check(scanner.RIGHT_PAREN) {
 		for {
-			if !p.match(scanner.GRAIN, scanner.DRAM, scanner.SCROLL) {
+			if !p.match(scanner.GRAIN, scanner.DRAM, scanner.SCROLL, scanner.SPELL) {
 				p.ParseError(p.peek(), "Expect parameter type.")
 				panic(parseAbort{})
 			}
