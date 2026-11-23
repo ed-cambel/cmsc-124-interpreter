@@ -68,3 +68,11 @@ type Param struct {
 	Name scanner.Token
 	Type scanner.Token
 }
+
+// YieldStmt leaves the enclosing function with Value; a bare return has a nil Value
+type YieldStmt struct {
+	Keyword scanner.Token // kept for the line number in errors
+	Value   Expr
+}
+
+func (YieldStmt) stmt() {}

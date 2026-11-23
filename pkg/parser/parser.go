@@ -11,11 +11,12 @@ import (
 type parseAbort struct{}
 
 type Parser struct {
-	tokens  []scanner.Token
-	current int
-	depth   int
-	IsError bool
-	exprs   []ast.Expr
+	tokens        []scanner.Token
+	current       int
+	depth         int
+	IsError       bool
+	exprs         []ast.Expr
+	functionDepth int // how many function bodies we are inside; 0 means top-level code
 }
 
 // Constructor
@@ -76,6 +77,10 @@ func (p *Parser) parseStatement() (stmt ast.Stmt) {
 
 	if p.match(scanner.SPELL) {
 		return p.function()
+	}
+
+	if p.match(scanner.YIELD) {
+		return p.yieldStatement()
 	}
 
 	expr := p.expression()
@@ -139,6 +144,9 @@ func (p *Parser) function() ast.Stmt {
 	p.consume(scanner.RIGHT_PAREN, "Expect ')' after parameters.")
 	p.consume(scanner.LEFT_BRACE, "Expect '{' before function body.")
 
+	p.functionDepth++
+	defer func() { p.functionDepth-- }()
+
 	return ast.SpellStmt{Name: name, Params: params, Body: p.block()}
 }
 
@@ -158,6 +166,23 @@ func (p *Parser) call() ast.Expr {
 		expr = ast.CallExpr{Callee: expr, Paren: paren, Args: args}
 	}
 	return expr
+}
+
+func (p *Parser) yieldStatement() ast.Stmt {
+	keyword := p.previous()
+
+	if p.functionDepth == 0 {
+		// reported but not aborted: the parser isn't confused, only the placement is illegal
+		p.ParseError(keyword, "Can't return from top-level code.")
+	}
+
+	var value ast.Expr
+	if !p.check(scanner.SEMICOLON) {
+		value = p.expression()
+	}
+
+	p.consume(scanner.SEMICOLON, "Expect ';' after return value.")
+	return ast.ReturnStmt{Keyword: keyword, Value: value}
 }
 
 // block parses statements up to the closing brace; the opening brace is already consumed
